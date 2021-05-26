@@ -295,11 +295,14 @@ Public Class SurveyEntry
         With Sheet
             'Dim BottomLine As Integer = CInt(.Cells("X2").Data)
             Dim BottomLine As Integer = LastLine()
-            .Cells("A" & BottomLine.ToString()).Data = SV.TripSerial
-            .Cells("B" & BottomLine.ToString()).Data = SV.SurveyDate
-            .Cells("C" & BottomLine.ToString()).Data = SV.DayOfWeek
-            .Cells("D" & BottomLine.ToString()).Data = SV.TimePeriod
-            .Cells("E" & BottomLine.ToString()).Data = SV.Route
+            Dim SerialSplit() As String = RouteRunSplit(SV.TripSerial)
+            If SerialSplit(0) = "2E" Then SerialSplit(0) = "2East"
+            Dim SerialFix = SerialSplit(0) + "-" + SerialSplit(1)
+            .Cells("A" & BottomLine.ToString()).Data = SerialFix.ToString()
+            .Cells("B" & BottomLine.ToString()).Data = SV.SurveyDate.ToString()
+            .Cells("C" & BottomLine.ToString()).Data = SV.DayOfWeek.ToString()
+            .Cells("D" & BottomLine.ToString()).Data = SV.TimePeriod.ToString()
+            .Cells("E" & BottomLine.ToString()).Data = SV.Route.ToString()
             .Cells("F" & BottomLine.ToString()).Data = SV.TotalCapacity
             .Cells("G" & BottomLine.ToString()).Data = SV.SeatedCapacity
             .Cells("H" & BottomLine.ToString()).Data = Convert.ToDouble(SV.CapacityMiles)
@@ -532,8 +535,8 @@ Public Class SurveyEntry
         ' Although there is a built-in way to find the last entered line on a spreadsheet, this one is consistently correct.
         ' The built-in method finds the last line accessed, rather than the last line with any data.
         Dim Last As Integer = 1
-        Dim Wsheet As Worksheet = TotalWorkbook.CurrentWorksheet
-        While Not IsDBNull(Wsheet.GetCellData("A" + Last.ToString())) And Wsheet.GetCellData("A" + Last.ToString()) <> ""
+        Dim Wsheet As Worksheet = TotalWorkbook.Worksheets("Sheet1")
+        While Not IsDBNull(Wsheet.CreateAndGetCell("A" + Last.ToString())) And Wsheet.GetCellData("A" + Last.ToString()) <> ""
             Last += 1
         End While
         Return Last
