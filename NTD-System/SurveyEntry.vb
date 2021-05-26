@@ -450,6 +450,8 @@ Public Class SurveyEntry
     Private Sub VehComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles VehComboBox.SelectedIndexChanged
         SeatedCapacity = CInt(VehicleInfo(VehComboBox.SelectedIndex)(2))
         TotalCapacity = CInt(VehicleInfo(VehComboBox.SelectedIndex)(1))
+        SeatedLabel.Text = ""
+        TotalLabel.Text = ""
         SeatedLabel.Text = "Seated Cap: " & SeatedCapacity.ToString()
         TotalLabel.Text = "Total Cap: " & TotalCapacity.ToString()
         WorkingSurvey.SeatedCapacity = SeatedCapacity
@@ -590,8 +592,10 @@ Public Class SurveyEntry
         CapTimer.Start()
     End Sub
 
-    Private Sub SerialLabel_TextChanged(sender As Object, e As EventArgs) Handles SerialLabel.TextChanged
+    Private Sub TimeOfDayLabel_TextChanged(sender As Object, e As EventArgs) Handles TimeOfDayLabel.TextChanged
         TimeOfDayLabel.ForeColor = Color.FromArgb(255, 0, 0)
         TODTimer.Start()
     End Sub
+
+
 End Class
