@@ -324,7 +324,7 @@ Partial Class SurveyEntry
         Me.VehComboBox.Location = New System.Drawing.Point(567, 5)
         Me.VehComboBox.Name = "VehComboBox"
         Me.VehComboBox.Size = New System.Drawing.Size(121, 21)
-        Me.VehComboBox.TabIndex = 23
+        Me.VehComboBox.TabIndex = 3
         '
         'ImportButt
         '
@@ -345,7 +345,7 @@ Partial Class SurveyEntry
         Me.DateTimePicker1.Location = New System.Drawing.Point(267, 8)
         Me.DateTimePicker1.Name = "DateTimePicker1"
         Me.DateTimePicker1.Size = New System.Drawing.Size(127, 20)
-        Me.DateTimePicker1.TabIndex = 24
+        Me.DateTimePicker1.TabIndex = 2
         '
         'CapTimer
         '
