@@ -1,0 +1,63 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="My" GeneratedClassName="MySettings" UseMySettingsClassName="true">
+  <Profiles />
+  <Settings>
+    <Setting Name="DayIndex" Type="System.String" Scope="User">
+      <Value Profile="(Default)">FTTTTTT</Value>
+    </Setting>
+    <Setting Name="DiffDay" Type="System.String" Scope="User">
+      <Value Profile="(Default)">FFFFFFT</Value>
+    </Setting>
+    <Setting Name="BaseLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">N:\</Value>
+    </Setting>
+    <Setting Name="CompletedLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">N:\Completed</Value>
+    </Setting>
+    <Setting Name="NumSurveys" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">9</Value>
+    </Setting>
+    <Setting Name="Defaults" Type="System.String" Scope="User">
+      <Value Profile="(Default)">FTTTTTT,FFFFFFT,N:\,N:\Completed,9,\Surveys.xlsm,\settings.ntd,\Route_Run.csv,N\Created</Value>
+    </Setting>
+    <Setting Name="SetDat" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">2018-07-06</Value>
+    </Setting>
+    <Setting Name="SurveyFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Surveys.xlsm</Value>
+    </Setting>
+    <Setting Name="SettingsFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">setings.ntd</Value>
+    </Setting>
+    <Setting Name="RouteRunFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Route_Run.csv</Value>
+    </Setting>
+    <Setting Name="WeekdayBatchFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">WDSurveyBatch.csv</Value>
+    </Setting>
+    <Setting Name="WeekendBatchFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">WESurveyBatch.csv</Value>
+    </Setting>
+    <Setting Name="CreatedLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">N:\Created</Value>
+    </Setting>
+    <Setting Name="TotalFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SurveyTotals.xlsx</Value>
+    </Setting>
+    <Setting Name="AMPeak" Type="System.String" Scope="User">
+      <Value Profile="(Default)">5:00</Value>
+    </Setting>
+    <Setting Name="Afternoon" Type="System.String" Scope="User">
+      <Value Profile="(Default)">10:30</Value>
+    </Setting>
+    <Setting Name="PMPeak" Type="System.String" Scope="User">
+      <Value Profile="(Default)">14:00</Value>
+    </Setting>
+    <Setting Name="VehCapFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">VehicleCapacity.csv</Value>
+    </Setting>
+    <Setting Name="FormSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">349, 146</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
