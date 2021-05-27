@@ -42,6 +42,7 @@ Public Class SurveyEntry
     Dim SeatedCapacity As Integer
     Dim VehicleInfo As List(Of String())
     Dim TotalWorkbook As New ReoGridControl
+    Dim PreviouslySelectedRow As Integer = 0
     'Dim PrevValue As New DataGridViewRow
     Private Sub SurveyEntry_Load(sender As Object, e As EventArgs) Handles Me.Load
         VehicleInfo = ReadVehicleFile()
@@ -75,6 +76,8 @@ Public Class SurveyEntry
             SurveyView.Rows(LastRow).ReadOnly = True
             SurveyView.CurrentCell = SurveyView.Rows(0).Cells(PBoard)
             SurveyView.FirstDisplayedScrollingRowIndex = 0
+            'PreviouslySelectedRow = 0
+            SurveyView.Rows(0).DefaultCellStyle.BackColor = Color.Aqua
         Else
             SurveyView.Rows.Clear()
             ImportButt.Enabled = True
@@ -268,6 +271,7 @@ Public Class SurveyEntry
     End Sub
 
     Protected Sub SurveyView_SelectionChanged(sender As Object, e As EventArgs) 'Handles SurveyView.SelectionChanged
+        SuspendDrawing(SurveyView)
         With SurveyView
             If .CurrentCell.ColumnIndex < PBoard Then
                 Dim WorkRow As Integer = .CurrentCell.RowIndex
@@ -286,7 +290,11 @@ Public Class SurveyEntry
                 End If
                 .CurrentCell = .Rows(WorkRow).Cells(PBoard)
             End If
+            .Rows(PreviouslySelectedRow).DefaultCellStyle = Nothing
+            PreviouslySelectedRow = .CurrentRow.Index
+            .CurrentRow.DefaultCellStyle.BackColor = Color.Aqua
         End With
+        ResumeDrawing(SurveyView)
     End Sub
 
     Private Sub StoreOnFile(SV As EnteredSurvey) ', Workbook As ReoGridControl)
