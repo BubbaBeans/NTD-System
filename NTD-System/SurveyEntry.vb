@@ -76,7 +76,7 @@ Public Class SurveyEntry
             SurveyView.Rows(LastRow).ReadOnly = True
             SurveyView.CurrentCell = SurveyView.Rows(0).Cells(PBoard)
             SurveyView.FirstDisplayedScrollingRowIndex = 0
-            'PreviouslySelectedRow = 0
+            PreviouslySelectedRow = 0
             SurveyView.Rows(0).DefaultCellStyle.BackColor = Color.Aqua
         Else
             SurveyView.Rows.Clear()
