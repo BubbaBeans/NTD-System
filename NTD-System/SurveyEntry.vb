@@ -43,6 +43,7 @@ Public Class SurveyEntry
     Dim VehicleInfo As List(Of String())
     Dim TotalWorkbook As New ReoGridControl
     Dim PreviouslySelectedRow As Integer = 0
+    Dim nonNumberEntered As Boolean = False
     'Dim PrevValue As New DataGridViewRow
     Private Sub SurveyEntry_Load(sender As Object, e As EventArgs) Handles Me.Load
         VehicleInfo = ReadVehicleFile()
@@ -228,6 +229,7 @@ Public Class SurveyEntry
                                      Keys.NumPad6, Keys.NumPad7, Keys.NumPad8, Keys.NumPad9}
         If Not AllowedKeys.Contains(e.KeyCode) Then
             e.SuppressKeyPress = True
+            nonNumberEntered = True
         End If
         If e.KeyCode = Keys.Delete Then
             WorkingCell.Value = DBNull.Value
@@ -609,5 +611,13 @@ Public Class SurveyEntry
         TODTimer.Start()
     End Sub
 
-
+    Public Sub SurveyView_KeyPress(sender As Object, e As KeyPressEventArgs) Handles SurveyView.KeyPress
+        If Not Char.IsControl(e.KeyChar) And Not Char.IsDigit(e.KeyChar) Then
+            nonNumberEntered = True
+        End If
+        If nonNumberEntered = True Then
+            e.Handled = True
+            nonNumberEntered = False
+        End If
+    End Sub
 End Class
