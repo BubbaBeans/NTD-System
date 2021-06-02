@@ -392,7 +392,7 @@ Partial Class SurveyEntry
         Me.Controls.Add(Me.SurveyView)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D
         Me.Name = "SurveyEntry"
-        Me.Text = "SurveyEntry"
+        Me.Text = "Entering Surveys"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         CType(Me.SurveyView, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
