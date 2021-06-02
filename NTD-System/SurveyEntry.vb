@@ -84,6 +84,7 @@ Public Class SurveyEntry
             ImportButt.Enabled = True
         End If
         SurveyView.Tag = 0
+        ResizeGrid(SurveyView)
         AddAllHandlers()
 
         'ResizeGrid(SurveyView)
@@ -620,4 +621,5 @@ Public Class SurveyEntry
             nonNumberEntered = False
         End If
     End Sub
+
 End Class

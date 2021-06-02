@@ -26,6 +26,7 @@ Partial Class SurveyEntry
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
@@ -68,7 +69,7 @@ Partial Class SurveyEntry
         Me.SurveyView.AllowUserToDeleteRows = False
         Me.SurveyView.AllowUserToResizeColumns = False
         Me.SurveyView.AllowUserToResizeRows = False
-        DataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
+        DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ControlLight
         Me.SurveyView.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
         Me.SurveyView.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
@@ -84,23 +85,31 @@ Partial Class SurveyEntry
         Me.SurveyView.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
         Me.SurveyView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.SurveyView.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.StopNo, Me.StopName, Me.Odometer, Me.PassBoard, Me.PassDeboard, Me.PassOnBoard, Me.DistBetStop, Me.PassMiles})
+        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle11.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.SurveyView.DefaultCellStyle = DataGridViewCellStyle11
         Me.SurveyView.Location = New System.Drawing.Point(16, 97)
         Me.SurveyView.MultiSelect = False
         Me.SurveyView.Name = "SurveyView"
-        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter
-        DataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle11.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.SurveyView.RowHeadersDefaultCellStyle = DataGridViewCellStyle11
+        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter
+        DataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle12.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.SurveyView.RowHeadersDefaultCellStyle = DataGridViewCellStyle12
         Me.SurveyView.RowHeadersWidth = 12
         Me.SurveyView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing
         Me.SurveyView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
         Me.SurveyView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.SurveyView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.SurveyView.Size = New System.Drawing.Size(702, 784)
+        Me.SurveyView.Size = New System.Drawing.Size(806, 784)
         Me.SurveyView.TabIndex = 5
         '
         'StopNo
@@ -254,7 +263,7 @@ Partial Class SurveyEntry
         '
         Me.SaveButton.Enabled = False
         Me.SaveButton.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.SaveButton.Location = New System.Drawing.Point(724, 138)
+        Me.SaveButton.Location = New System.Drawing.Point(845, 139)
         Me.SaveButton.Name = "SaveButton"
         Me.SaveButton.Size = New System.Drawing.Size(75, 23)
         Me.SaveButton.TabIndex = 6
@@ -311,7 +320,7 @@ Partial Class SurveyEntry
         'ClearButt
         '
         Me.ClearButt.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.ClearButt.Location = New System.Drawing.Point(724, 188)
+        Me.ClearButt.Location = New System.Drawing.Point(845, 189)
         Me.ClearButt.Name = "ClearButt"
         Me.ClearButt.Size = New System.Drawing.Size(75, 23)
         Me.ClearButt.TabIndex = 7
@@ -366,7 +375,7 @@ Partial Class SurveyEntry
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.BackColor = System.Drawing.SystemColors.AppWorkspace
-        Me.ClientSize = New System.Drawing.Size(819, 893)
+        Me.ClientSize = New System.Drawing.Size(972, 893)
         Me.Controls.Add(Me.DateTimePicker1)
         Me.Controls.Add(Me.VehComboBox)
         Me.Controls.Add(Me.ClearButt)
@@ -384,6 +393,7 @@ Partial Class SurveyEntry
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D
         Me.Name = "SurveyEntry"
         Me.Text = "SurveyEntry"
+        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         CType(Me.SurveyView, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
