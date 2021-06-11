@@ -17,7 +17,7 @@ Module ExcelFunctions
         Dim modifier As Integer = 0
         'Dim book As Workbook = app.Workbooks.Open(My.Settings.BaseLocation & My.Settings.SurveyFileName)
         Dim printbook As Workbook = app.Workbooks.Add()
-        Dim FNames As List(Of String) = New List(Of String)
+        Dim FNames As New List(Of String)
 
         Dim DtCell, TmCell As Range
         Dim counter As Integer = 1

@@ -17,7 +17,7 @@ Module Comm
         fyle = My.Settings.SettingsFileName
 
         If File.Exists(My.Settings.BaseLocation & fyle) Then
-            Dim StngsFile As StreamReader = New StreamReader(My.Settings.BaseLocation & fyle)
+            Dim StngsFile As New StreamReader(My.Settings.BaseLocation & fyle)
             Dim Line, stings() As String
             Line = StngsFile.ReadLine() 'First line is the date of the settings.  This allows for
             '  for an updates settings file to be created ahead of time, placed on the server, and
@@ -90,7 +90,7 @@ Module Comm
         With My.Settings
             If File.Exists(.BaseLocation & .SettingsFileName) Then
                 File.Delete(.BaseLocation & .SettingsFileName)
-                Dim SFile As StreamWriter = New StreamWriter(.BaseLocation & .SettingsFileName)
+                Dim SFile As New StreamWriter(.BaseLocation & .SettingsFileName)
                 Dim c As String = ","
                 SFile.WriteLine(CStr(Now))
                 Dim line As String = "0xC000,F," & c & Trim(base) & c & Trim(dayin) & c & Trim(diffday) & c & Trim(complet) & c & Trim(CStr(survnum)) & c & Trim(.SettingsFileName) & c
@@ -206,7 +206,7 @@ Module Comm
         End Using
     End Sub
     Public Function ReadVehicleFile() As List(Of String())
-        Dim Info As List(Of String()) = New List(Of String())
+        Dim Info As New List(Of String())
         Using sr As New StreamReader(My.Settings.BaseLocation & "\" & My.Settings.VehCapFile)
             Do Until sr.EndOfStream
                 Dim Line() As String = sr.ReadLine().Split(","c)
@@ -216,7 +216,7 @@ Module Comm
         Return Info
     End Function
     Public Function HolidaysBetween(StartDate As Date, StopDate As Date, ByRef InfoBox As RichTextBox) As List(Of Date)
-        Dim Holidates As List(Of Date) = New List(Of Date)
+        Dim Holidates As New List(Of Date)
         Dim CurrentHolidays = DateSystem.GetPublicHoliday(StartDate, StopDate, CountryCode.US)
         Dim NonRunningHolidays() As String = {"New Year's Day", "Memorial Day", "Independence Day", "Labour Day", "Veterans Day", "Thanksgiving Day", "Christmas Day"}
         For Each h In CurrentHolidays

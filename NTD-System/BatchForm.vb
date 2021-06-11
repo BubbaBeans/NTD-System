@@ -138,7 +138,7 @@ Public Class BatchForm
         Dim Bolds As Date() = BoldDates(StartDate, EndDate)
         Status("Done getting bolded dates", False)
         Dim BatchFile As String() = {"Batch"}
-        Dim CurrSurveys As List(Of Route) = New List(Of Route)
+        Dim CurrSurveys As New List(Of Route)
         Dim SingleSurvey As Route
         Dim SurveyTime As String = ""
         Dim RoutePart As String = ""
@@ -260,7 +260,7 @@ OuttaHere:
     End Sub
     Private Sub ReadBatchFile(file As String, ByRef target As String())
         Dim indx As Integer = 0
-        Using sr As StreamReader = New StreamReader(file)
+        Using sr As New StreamReader(file)
             While Not sr.EndOfStream
                 ReDim Preserve target(indx)
                 target(indx) = sr.ReadLine()

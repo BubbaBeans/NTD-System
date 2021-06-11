@@ -156,7 +156,7 @@ Public Class FormSettings
             WEBatchName.Text = CStr(.WeekendBatchFileName)
             CreatedSurveys.Text = CStr(.CreatedLocation)
             TotalFileName.Text = CStr(.TotalFile)
-            Dim Provider As CultureInfo = New CultureInfo("en-US")
+            Dim Provider As New CultureInfo("en-US")
             AMPeakPicker.Value = Convert.ToDateTime(.AMPeak)
             AfternoonPicker.Value = Convert.ToDateTime(.Afternoon)
             PMPicker.Value = Convert.ToDateTime(.PMPeak)

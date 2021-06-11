@@ -22,7 +22,6 @@ Public Class SurveyEntry
 
     ' =========================================================================================================================================
 
-
     ' The following Const contain the column indexes so they can be referenced by name
     Const Odo As Integer = 2
     Const PBoard As Integer = 3
@@ -44,6 +43,7 @@ Public Class SurveyEntry
     Dim TotalWorkbook As New ReoGridControl
     Dim PreviouslySelectedRow As Integer = 0
     Dim nonNumberEntered As Boolean = False
+    Dim WarningSounded As Boolean = True
     'Dim PrevValue As New DataGridViewRow
     Private Sub SurveyEntry_Load(sender As Object, e As EventArgs) Handles Me.Load
         VehicleInfo = ReadVehicleFile()
@@ -52,8 +52,18 @@ Public Class SurveyEntry
             VehComboBox.Items.Add(Vehicle(0))
             AutoCompleteCollection.Add(Vehicle(0))
         Next
+        'VehComboBox.AutoCompleteMode = AutoCompleteMode.Suggest
         VehComboBox.AutoCompleteCustomSource = AutoCompleteCollection
+        'VehComboBox.BackColor = SystemColors.Window
         TotalWorkbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
+        With SurveyView
+            .Columns("StopNo").ReadOnly = True
+            .Columns("StopName").ReadOnly = True
+            .Columns("Odometer").ReadOnly = True
+            .Columns("PassOnBoard").ReadOnly = True
+            .Columns("DistBetStop").ReadOnly = True
+            .Columns("PassMiles").ReadOnly = True
+        End With
     End Sub
 
     Private Sub SurveyEntry_Show(sender As Object, e As EventArgs) Handles Me.Shown
@@ -74,6 +84,7 @@ Public Class SurveyEntry
             SurveyView.AutoResizeColumns()
             ResizeGrid(SurveyView)
             LastRow = SurveyView.Rows.Count - 1
+            SurveyView.Rows(0).Cells(5).ReadOnly = True
             SurveyView.Rows(LastRow).ReadOnly = True
             SurveyView.CurrentCell = SurveyView.Rows(0).Cells(PBoard)
             SurveyView.FirstDisplayedScrollingRowIndex = 0
@@ -102,6 +113,7 @@ Public Class SurveyEntry
         dgrid.Width = fullWidth
         SaveButton.Location = New Point((dgrid.Location.X + fullWidth) + 12, SaveButton.Location.Y)
         ClearButt.Location = New Point((dgrid.Location.X + fullWidth) + 12, ClearButt.Location.Y)
+        SavedLabel.Location = New Point((dgrid.Location.X + fullWidth) + 12, SavedLabel.Location.Y)
         Me.Width = SaveButton.Location.X + SaveButton.Width + 25
     End Sub
 
@@ -139,7 +151,15 @@ Public Class SurveyEntry
             UpdateTotals(SurveyView)
             CurrentlyUpdating = False
         End If
-        If SurveyView.Tag < 0 Then SurveyView.Tag = 0
+        If SurveyView.Tag < 0 Then
+            SurveyView.Tag = 0
+            WarningSounded = False
+        Else
+            If SurveyView.Tag > 0 And Not WarningSounded Then
+                WarningSounded = True
+                My.Computer.Audio.Play(My.Resources.sound_wrong, AudioPlayMode.Background)
+            End If
+        End If
         SaveButton.Enabled = (SurveyView.Tag = 0)
     End Sub
 
@@ -286,20 +306,20 @@ Public Class SurveyEntry
                 .CurrentCell = .Rows(WorkRow).Cells(PDBoard)
             ElseIf .CurrentCell.ColumnIndex > PDBoard Then
                 Dim WorkRow As Integer = .CurrentCell.RowIndex
-                If WorkRow < LastRow Then
+                If WorkRow < (LastRow - 1) Then
                     WorkRow += 1
                 Else
                     WorkRow = 0
                 End If
                 .CurrentCell = .Rows(WorkRow).Cells(PBoard)
             End If
+
             .Rows(PreviouslySelectedRow).DefaultCellStyle = Nothing
             PreviouslySelectedRow = .CurrentRow.Index
             .CurrentRow.DefaultCellStyle.BackColor = Color.Aqua
         End With
         ResumeDrawing(SurveyView)
     End Sub
-
     Private Sub StoreOnFile(SV As EnteredSurvey) ', Workbook As ReoGridControl)
         'Workbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
         Dim Sheet As Worksheet = TotalWorkbook.CurrentWorksheet
@@ -327,6 +347,10 @@ Public Class SurveyEntry
         TotalWorkbook.Save(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
         Sheet = Nothing
         'TotalWorkbook = Nothing
+        My.Computer.Audio.Play(My.Resources.ding, AudioPlayMode.Background)
+        SavedLabel.ForeColor = Color.Red
+        SavedLabel.Visible = True
+        SavedLabelTimer.Enabled = True
     End Sub
 
     Private Sub DateTimePicker1_Leave(sender As Object, e As EventArgs) Handles DateTimePicker1.Leave
@@ -432,7 +456,6 @@ Public Class SurveyEntry
         WorkingSurvey.TimePeriod = TOfDay
         TotalItAll(SurveyView)
         StoreOnFile(WorkingSurvey) ', TotalWorkbook)
-        MsgBox("Saved", vbOKOnly)
         'ClearButt.PerformClick()
         RemoveAllHandlers()
         SurveyView.Rows.Clear()
@@ -522,9 +545,9 @@ Public Class SurveyEntry
         AddHandler SurveyView.SelectionChanged, AddressOf SurveyView_SelectionChanged
     End Sub
 
-    Private Sub SurveyEntry_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        TotalWorkbook = Nothing
-    End Sub
+    'Private Sub SurveyEntry_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+    '    TotalWorkbook = Nothing
+    'End Sub
 
     Private Function PreviouslyEntered(dayt As String, Serial As String) As Boolean
         Dim IsFound As Boolean = False
@@ -535,7 +558,7 @@ Public Class SurveyEntry
             'If IsDBNull(Sheet.GetCell("A" + BottomLine.ToString())) Then Return False
             Dim Trip As String = Sheet.GetCellData("A" & BottomLine.ToString()).ToString()
             Dim SDate As String = Sheet.GetCellData("B" & BottomLine.ToString()).ToString()
-            IsFound = ((dayt = SDate) And (Serial = Trip)) ' Checks whether this serial number has been entered for this date already, indicating a duplicate
+            IsFound = ((Trim(dayt) = Trim(SDate)) And (Trim(Serial) = Trim(Trip))) ' Checks whether this serial number has been entered for this date already, indicating a duplicate
             BottomLine -= 1
         End While
         Sheet = Nothing
@@ -571,7 +594,6 @@ Public Class SurveyEntry
         DayOfWeekLabel.ForeColor = Color.FromArgb(255, 0, 0)
         DOWTimer.Start()
     End Sub
-
     Private Sub DOWTimer_Tick(sender As Object, e As EventArgs) Handles DOWTimer.Tick
         Dim r As Integer = DayOfWeekLabel.ForeColor.R
         Dim g As Integer = DayOfWeekLabel.ForeColor.G
@@ -622,4 +644,16 @@ Public Class SurveyEntry
         End If
     End Sub
 
+    Private Sub SavedLabelTimer_Tick(sender As Object, e As EventArgs) Handles SavedLabelTimer.Tick
+        Dim r As Integer = SavedLabel.ForeColor.R
+        Dim g As Integer = SavedLabel.ForeColor.G
+        Dim b As Integer = SavedLabel.ForeColor.B
+        r -= 4
+        If r >= 0 Then
+            SavedLabel.ForeColor = Color.FromArgb(r, g, b)
+        Else
+            SavedLabelTimer.Stop()
+            SavedLabel.Visible = False
+        End If
+    End Sub
 End Class
