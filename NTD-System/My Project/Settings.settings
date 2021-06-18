@@ -18,7 +18,7 @@
       <Value Profile="(Default)">9</Value>
     </Setting>
     <Setting Name="Defaults" Type="System.String" Scope="User">
-      <Value Profile="(Default)">FTTTTTT,FFFFFFT,N:\,N:\Completed,9,\Surveys.xlsm,\settings.ntd,\Route_Run.csv,N\Created</Value>
+      <Value Profile="(Default)">FTTTTTT,FFFFFFT,N:\,N:\Completed,9,\Surveys.xlsm,\setings.ntd,\Route_Run.csv,N\Created</Value>
     </Setting>
     <Setting Name="SetDat" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)">2018-07-06</Value>

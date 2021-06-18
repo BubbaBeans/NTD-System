@@ -69,8 +69,8 @@ Public Class SurveyEntry
     Private Sub SurveyEntry_Show(sender As Object, e As EventArgs) Handles Me.Shown
         ' The GUI doesn't allow the datagridview double-buffering to be enabled, so the next three lines enable it
         Dim dgvType As Type = SurveyView.GetType()
-        Dim pi As Reflection.PropertyInfo = dgvType.GetProperty("DoubleBuffered", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
-        pi.SetValue(SurveyView, True, Nothing)
+        Dim propertyInfo As Reflection.PropertyInfo = dgvType.GetProperty("DoubleBuffered", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
+        propertyInfo.SetValue(SurveyView, True, Nothing)
         ' And now there should be double-buffering, which will help speed the repainting of the control, especially when scrolling.
         DateTimePicker1.Value = Now()
         DateTimePicker1.MaxDate = Now()
@@ -258,6 +258,7 @@ Public Class SurveyEntry
     End Sub
 
     Private Shared Function CellVal(dgrid As DataGridView, column As Integer, Row As Integer) As Object
+        ' Returns the value of the cell.  If the cell is empty, return zero
         Dim value As Object
         Dim Rtn As Object
         value = dgrid.Rows(Row).Cells(column).Value
@@ -270,6 +271,7 @@ Public Class SurveyEntry
     End Function
 
     Shared Function FindPrevious(dgrid As DataGridView, CurrentRow As Integer) As Integer
+        ' Returns the row index of the last entered data.  Used to calculate passengers on board and passenger miles between stops
         Dim Index As Integer = CurrentRow - 1
         Dim Rtn As Integer = 0
         While (Index >= 0)
@@ -352,7 +354,6 @@ Public Class SurveyEntry
         SavedLabel.Visible = True
         SavedLabelTimer.Enabled = True
     End Sub
-
     Private Sub DateTimePicker1_Leave(sender As Object, e As EventArgs) Handles DateTimePicker1.Leave
         If DateTimePicker1.Value > Today() Then
             DateTimePicker1.Value = Today()
@@ -367,8 +368,6 @@ Public Class SurveyEntry
         End If
 
     End Sub
-
-
     Private Function TimeOfDay(Serial As String, DayOfWeek As Integer) As String()
         Dim RRun() As String = RouteRunSplit(Serial)
         Dim SurveysToCheck As List(Of Route)
@@ -417,9 +416,10 @@ Public Class SurveyEntry
         DayOfWeekLabel.Text = "Day Of Week: " & DateAndTime.WeekdayName(DOWeek)
         Dim TOfDInfo() As String = TimeOfDay(SurveySerial, DOWeek)
         If TOfDInfo(0) = "Error" Then
-            MsgBox("The Serial Number is invald.  Please correct.", vbCritical)
-            SerialTextBox.Clear()
-            SerialTextBox.Focus()
+            'MsgBox("The Serial Number is invald.  Please correct.", vbCritical)
+            'SerialTextBox.Clear()
+            'SerialTextBox.Focus()
+            StoreSurveyTODInfo(TOfDInfo)
             ImportButt.BackColor = SystemColors.ControlDarkDark
             ImportButt.Enabled = False
             Exit Sub
@@ -428,16 +428,23 @@ Public Class SurveyEntry
         If PreviouslyEntered(Trim(SurveyDate.ToString("MM/dd/yyyy")), Trim(SurveySerial)) Then
             MsgBox("This survey has been entered already.", vbCritical)
             SerialTextBox.Clear()
-            DateTimePicker1.Value = Today()
+            'DateTimePicker1.Value = Today()
             Exit Sub
         End If
-        TOfDay = TOfDInfo(0)
-        TimeOfDayLabel.Text = "Time Of Day: " & TOfDInfo(1) & vbNewLine & "(" & TOfDInfo(0) & ")"
-        WorkingSurvey.TimePeriod = TOfDay
-        WorkingSurvey.SurveyDate = SurveyDate.ToShortDateString
-        WorkingSurvey.SurveyTime = TOfDInfo(1)
+        'TOfDay = TOfDInfo(0)
+        'TimeOfDayLabel.Text = "Time Of Day: " & TOfDInfo(1) & vbNewLine & "(" & TOfDInfo(0) & ")"
+        'WorkingSurvey.TimePeriod = TOfDay
+        'WorkingSurvey.SurveyDate = SurveyDate.ToShortDateString
+        'WorkingSurvey.SurveyTime = TOfDInfo(1)
+        StoreSurveyTODInfo(TOfDInfo)
         ImportButt.BackColor = SystemColors.ActiveCaption
         ImportButt.Enabled = True
+    End Sub
+    Private Sub StoreSurveyTODInfo(ToD() As String)
+        TimeOfDayLabel.Text = "Time Of Day: " & ToD(1) & vbNewLine & "(" & ToD(0) & ")"
+        WorkingSurvey.TimePeriod = ToD(0)
+        WorkingSurvey.SurveyDate = DateTimePicker1.Value.ToShortDateString
+        WorkingSurvey.SurveyTime = ToD(1)
     End Sub
 
     Private Sub SerialTextBox_Leave(sender As Object, e As EventArgs) Handles SerialTextBox.Leave
@@ -469,6 +476,9 @@ Public Class SurveyEntry
         RemoveAllHandlers()
         ImportButt.BackColor = SystemColors.ControlDarkDark
         ImportButt.Enabled = False
+        'MsgBox("The Serial Number is invald.  Please correct.", vbCritical)
+        'SerialTextBox.Clear()
+        'SerialTextBox.Focus()
         SurveyView.Rows.Clear()
         WorkingSurvey.Clear()
         Dim FileName As String = RouteRunSplit(Trim(SerialTextBox.Text).ToUpper())(0)
@@ -568,12 +578,14 @@ Public Class SurveyEntry
     Private Function LastLine() As Integer
         ' Although there is a built-in way to find the last entered line on a spreadsheet, this one is consistently correct.
         ' The built-in method finds the last line accessed, rather than the last line with any data.
-        Dim Last As Integer = 1
-        Dim Wsheet As Worksheet = TotalWorkbook.Worksheets("Sheet1")
-        While Not IsDBNull(Wsheet.CreateAndGetCell("A" + Last.ToString())) And Wsheet.GetCellData("A" + Last.ToString()) <> ""
-            Last += 1
-        End While
-        Return Last
+        'Dim Last As Integer = 1
+        'Dim Wsheet As Worksheet = TotalWorkbook.Worksheets("Sheet1")
+        'While Not IsDBNull(Wsheet.CreateAndGetCell("A" + Last.ToString())) And Wsheet.GetCellData("A" + Last.ToString()) <> ""
+        'MsgBox(Last.ToString(), vbOKOnly)
+        'Last += 1
+        'End While
+        'Last = Wsheet.MaxContentRow + 1
+        Return TotalWorkbook.Worksheets("Sheet1").MaxContentRow + 1
     End Function
 
     Private Sub CapTimer_Tick(sender As Object, e As EventArgs) Handles CapTimer.Tick
