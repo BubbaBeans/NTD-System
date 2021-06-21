@@ -459,8 +459,8 @@ Public Class SurveyEntry
 
     Private Sub SaveButton_Click(sender As Object, e As EventArgs) Handles SaveButton.Click
         SaveButton.Enabled = False
-        WorkingSurvey.TripSerial = SerialTextBox.Text
-        WorkingSurvey.TimePeriod = TOfDay
+        WorkingSurvey.TripSerial = Trim(SerialTextBox.Text)
+        WorkingSurvey.TimePeriod = Trim(TOfDay)
         TotalItAll(SurveyView)
         StoreOnFile(WorkingSurvey) ', TotalWorkbook)
         'ClearButt.PerformClick()
