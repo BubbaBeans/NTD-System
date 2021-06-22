@@ -493,6 +493,7 @@ Public Class SurveyEntry
         End If
         FileName = "R" + FileName + ".csv"
         StartEntry(FileName)
+
         AddAllHandlers()
     End Sub
 
