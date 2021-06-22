@@ -324,8 +324,9 @@ Public Class SurveyEntry
     End Sub
     Private Sub StoreOnFile(SV As EnteredSurvey) ', Workbook As ReoGridControl)
         'Workbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
-        Dim Sheet As Worksheet = TotalWorkbook.CurrentWorksheet
-        With Sheet
+        'Dim Sheet As Worksheet = TotalWorkbook.CurrentWorksheet
+        With TotalWorkbook.CurrentWorksheet
+            'With Sheet
             'Dim BottomLine As Integer = CInt(.Cells("X2").Data)
             Dim BottomLine As Integer = LastLine()
             Dim SerialSplit() As String = RouteRunSplit(SV.TripSerial)
@@ -347,7 +348,7 @@ Public Class SurveyEntry
             .Cells("X2").Data = BottomLine + 1
         End With
         TotalWorkbook.Save(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
-        Sheet = Nothing
+        'Sheet = Nothing
         'TotalWorkbook = Nothing
         My.Computer.Audio.Play(My.Resources.ding, AudioPlayMode.Background)
         SavedLabel.ForeColor = Color.Red
