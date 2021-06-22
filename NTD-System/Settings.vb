@@ -33,8 +33,8 @@ Public Class FormSettings
     End Function
 
     Private Sub CanButt_Click(sender As Object, e As EventArgs) Handles CanButt.Click
-        Me.Hide()
-        Me.Close()
+        Hide()
+        Close()
     End Sub
 
     Private Sub CompletedChange_Click(sender As Object, e As EventArgs) Handles CompletedChange.Click
