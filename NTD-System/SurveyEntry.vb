@@ -108,7 +108,7 @@ Public Class SurveyEntry
             If c.Visible Then fullWidth += c.Width + c.DividerWidth * 2
         Next
         fullWidth += SystemInformation.VerticalScrollBarWidth + 15
-        ' Do NOT move this line below the dgrid.Width statement.  Without the control redrawing when the width is set, the whole window gets ugly
+        ' Do NOT move the following line below the dgrid.Width statement.  Without the control redrawing when the width is set, the whole window gets ugly
         ResumeDrawing(dgrid)
         dgrid.Width = fullWidth
         SaveButton.Location = New Point((dgrid.Location.X + fullWidth) + 12, SaveButton.Location.Y)
