@@ -493,8 +493,6 @@ Public Class SurveyEntry
         End If
         FileName = "R" + FileName + ".csv"
         StartEntry(FileName)
-
-        AddAllHandlers()
     End Sub
 
     Private Sub VehComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles VehComboBox.SelectedIndexChanged
