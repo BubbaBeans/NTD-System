@@ -41,7 +41,7 @@ Module ExcelFunctions
             DtCell.Value = CStr(Format(s.DateTime, "MM/dd/yy"))
             TmCell.Value = CStr(s.TimeofSurvey)
             If s.Serial.Contains("SE2") Then
-                If s.DateTime.DayOfWeek = vbMonday Then
+                If s.DateTime.DayOfWeek = DayOfWeek.Monday Then
                     TmCell.Value = ("13:20")
                 Else
                     TmCell.Value = ("15:20")
