@@ -11,10 +11,11 @@
     <AssemblyName>NTD-System</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsForms</MyType>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>N:\soft\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -28,7 +29,7 @@
     <ProductName>NTD Survey Creator</ProductName>
     <PublisherName>Perpetual Programming</PublisherName>
     <SuiteName>National Transit Database Management System</SuiteName>
-    <ApplicationRevision>37</ApplicationRevision>
+    <ApplicationRevision>38</ApplicationRevision>
     <ApplicationVersion>2.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -272,6 +273,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <None Include="Resources\Speaker_Off.png" />
+    <None Include="Resources\Speaker_On.png" />
     <None Include="Resources\ding.wav" />
     <None Include="Resources\sound-wrong.wav" />
     <None Include="Resources\SplashBack.png" />

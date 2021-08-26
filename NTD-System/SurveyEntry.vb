@@ -64,6 +64,11 @@ Public Class SurveyEntry
             .Columns("DistBetStop").ReadOnly = True
             .Columns("PassMiles").ReadOnly = True
         End With
+        If My.Settings.AudibleNotificationsEnabled Then
+            SpeakerBox.Image = My.Resources.Speaker_On
+        Else
+            SpeakerBox.Image = My.Resources.Speaker_Off
+        End If
     End Sub
 
     Private Sub SurveyEntry_Show(sender As Object, e As EventArgs) Handles Me.Shown
@@ -157,7 +162,7 @@ Public Class SurveyEntry
         Else
             If SurveyView.Tag > 0 And Not WarningSounded Then
                 WarningSounded = True
-                My.Computer.Audio.Play(My.Resources.sound_wrong, AudioPlayMode.Background)
+                PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.sound_wrong)
             End If
         End If
         SaveButton.Enabled = (SurveyView.Tag = 0)
@@ -350,7 +355,7 @@ Public Class SurveyEntry
         TotalWorkbook.Save(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
         'Sheet = Nothing
         'TotalWorkbook = Nothing
-        My.Computer.Audio.Play(My.Resources.ding, AudioPlayMode.Background)
+        PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.ding)
         SavedLabel.ForeColor = Color.Red
         SavedLabel.Visible = True
         SavedLabelTimer.Enabled = True
@@ -666,6 +671,21 @@ Public Class SurveyEntry
         Else
             SavedLabelTimer.Stop()
             SavedLabel.Visible = False
+        End If
+    End Sub
+
+    Private Sub SpeakerBox_Click(sender As Object, e As EventArgs) Handles SpeakerBox.Click
+        My.Settings.AudibleNotificationsEnabled = Not My.Settings.AudibleNotificationsEnabled
+        If My.Settings.AudibleNotificationsEnabled Then
+            SpeakerBox.Image = My.Resources.Speaker_On
+        Else
+            SpeakerBox.Image = My.Resources.Speaker_Off
+        End If
+        PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.ding)
+    End Sub
+    Private Sub PlaySound(Optional ShouldIPlay As Boolean = True, Optional SoundToPlay As System.IO.Stream = Nothing)
+        If My.Settings.AudibleNotificationsEnabled Then
+            My.Computer.Audio.Play(SoundToPlay, AudioPlayMode.Background)
         End If
     End Sub
 End Class

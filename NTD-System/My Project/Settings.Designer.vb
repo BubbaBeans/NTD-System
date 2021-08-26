@@ -282,6 +282,18 @@ Namespace My
                 Me("FormSize") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property AudibleNotificationsEnabled() As Boolean
+            Get
+                Return CType(Me("AudibleNotificationsEnabled"),Boolean)
+            End Get
+            Set
+                Me("AudibleNotificationsEnabled") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

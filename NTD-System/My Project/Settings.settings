@@ -59,5 +59,8 @@
     <Setting Name="FormSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">349, 146</Value>
     </Setting>
+    <Setting Name="AudibleNotificationsEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
