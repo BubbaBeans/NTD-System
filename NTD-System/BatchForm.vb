@@ -3,9 +3,10 @@ Public Class BatchForm
     Dim WeekdayBatch(12) As String
     Dim WeekendBatch(12) As String
     Public StatusSpacer As String = vbNewLine & "        "
+    Dim Result As MsgBoxResult ' This allows for a messagebox to be used anywhere in the form, just a quick placeholder basically
     Private Sub BatchForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        RadioButton1.Checked = True
-        RadioButton2.Checked = False
+        EndingDateRadioButton.Checked = True
+        NoOfDaysRadioButton.Checked = False
         EndDatePicker.Enabled = True
         NumbOfDays.Enabled = False
         StartDatePicker.Value = FirstMonday(Now)
@@ -94,7 +95,7 @@ Public Class BatchForm
         End If
     End Function
     Private Sub MonthCalendar1_DateSelected(sender As Object, e As DateRangeEventArgs) Handles MonthCalendar1.DateSelected
-        If My.Settings.DayIndex(e.Start.DayOfWeek) <> "F" Then
+        If My.Settings.DayIndex(e.Start.DayOfWeek) <> "F" Then ' Checks to ensure it is a day we are running.
             Dim index = Array.IndexOf(MonthCalendar1.BoldedDates, e.Start.Date)
             If index = -1 Then
                 MonthCalendar1.AddBoldedDate(e.Start.Date)
@@ -114,20 +115,20 @@ Public Class BatchForm
         'Dim ChosenDate As Date = FirstMonday(StartDatePicker.Value)
         UpdateCalendars(StartDatePicker.Value, EndDatePicker.Value)
     End Sub
-    Private Sub RadioButton1_CheckedChanged(sender As Object, e As EventArgs) Handles RadioButton1.CheckedChanged
-        RadioButton2.Checked = Not RadioButton1.Checked
-        EndDatePicker.Enabled = RadioButton1.Checked
-        NumbOfDays.Enabled = Not RadioButton1.Checked
+    Private Sub EndingDateRadioButton_CheckedChanged(sender As Object, e As EventArgs) Handles EndingDateRadioButton.CheckedChanged
+        NoOfDaysRadioButton.Checked = Not EndingDateRadioButton.Checked
+        EndDatePicker.Enabled = EndingDateRadioButton.Checked
+        NumbOfDays.Enabled = Not EndingDateRadioButton.Checked
     End Sub
-    Private Sub RadioButton2_CheckedChanged(sender As Object, e As EventArgs) Handles RadioButton2.CheckedChanged
-        RadioButton1.Checked = Not RadioButton2.Checked
-        EndDatePicker.Enabled = Not RadioButton2.Checked
-        NumbOfDays.Enabled = RadioButton2.Checked
+    Private Sub NoOfDaysRadioButton_CheckedChanged(sender As Object, e As EventArgs) Handles NoOfDaysRadioButton.CheckedChanged
+        EndingDateRadioButton.Checked = Not NoOfDaysRadioButton.Checked
+        EndDatePicker.Enabled = Not NoOfDaysRadioButton.Checked
+        NumbOfDays.Enabled = NoOfDaysRadioButton.Checked
         If NumbOfDays.Enabled Then
             NumbOfDays.Focus()
         End If
     End Sub
-    Private Sub StartButton_Click(sender As Object, e As EventArgs) Handles StartButton.Click
+    Private Sub RunBatchButton_Click(sender As Object, e As EventArgs) Handles RunBatchButton.Click
         Dim StartDate As Date = CDate(StartDatePicker.Value.ToShortDateString)
         Dim EndDate As Date = CDate(EndDatePicker.Value.ToShortDateString)
         Dim RunPart As String = ""
@@ -168,6 +169,7 @@ Public Class BatchForm
                         Status(serial, True)
                         RunPart = SerialPart("RUN", serial)
                         RoutePart = SerialPart("ROUTE", serial)
+                        If ((RunPart = "#NA") Or (RoutePart = "#NA")) Then GoTo GoAheadAndJump
                         If Strings.Left(RoutePart, 2) = "SE" Then
                             If Strings.Right(RoutePart, 1) = "2" Then
                                 Surveys.Add(New Survey(serial, CDate(CurrDate & " " & "15:20"), "SE2"))
@@ -269,5 +271,7 @@ OuttaHere:
             End While
         End Using
     End Sub
-
+    Private Sub Mess(M As String)
+        Result = MsgBox(M, vbOKOnly)
+    End Sub
 End Class

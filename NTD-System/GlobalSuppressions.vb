@@ -14,3 +14,6 @@ Imports System.Diagnostics.CodeAnalysis
 <Assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification:="<Pending>", Scope:="member", Target:="~M:NTD_System.MainForm.WriteCalendar(System.String)~System.Boolean")>
 <Assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification:="<Pending>", Scope:="member", Target:="~M:NTD_System.SurveyEntry.TimeOfDay(System.String,System.Int32)~System.String[]")>
 <Assembly: SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification:="<Pending>", Scope:="member", Target:="~M:NTD_System.SurveyEntry.PreviouslyEntered(System.String,System.String)~System.Boolean")>
+<Assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification:="<Pending>", Scope:="member", Target:="~F:NTD_System.SurveyEntry.TOfDay")>
+<Assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification:="<Pending>", Scope:="member", Target:="~F:NTD_System.SurveyEntry.TotalWorkbook")>
+<Assembly: SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification:="<Pending>", Scope:="member", Target:="~M:NTD_System.BatchForm.RunBatchButton_Click(System.Object,System.EventArgs)")>

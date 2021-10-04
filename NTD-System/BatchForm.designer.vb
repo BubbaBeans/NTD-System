@@ -30,11 +30,11 @@ Partial Class BatchForm
         Me.Label3 = New System.Windows.Forms.Label()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.NumbOfDays = New System.Windows.Forms.NumericUpDown()
-        Me.RadioButton1 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton2 = New System.Windows.Forms.RadioButton()
+        Me.EndingDateRadioButton = New System.Windows.Forms.RadioButton()
+        Me.NoOfDaysRadioButton = New System.Windows.Forms.RadioButton()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
-        Me.StartButton = New System.Windows.Forms.Button()
+        Me.RunBatchButton = New System.Windows.Forms.Button()
         Me.BatchCancel = New System.Windows.Forms.Button()
         Me.BatchStatus = New System.Windows.Forms.RichTextBox()
         CType(Me.NumbOfDays, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -120,27 +120,27 @@ Partial Class BatchForm
         Me.NumbOfDays.TabIndex = 8
         Me.NumbOfDays.Value = New Decimal(New Integer() {1, 0, 0, 0})
         '
-        'RadioButton1
+        'EndingDateRadioButton
         '
-        Me.RadioButton1.AutoSize = True
-        Me.RadioButton1.Checked = True
-        Me.RadioButton1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RadioButton1.Location = New System.Drawing.Point(18, 87)
-        Me.RadioButton1.Name = "RadioButton1"
-        Me.RadioButton1.Size = New System.Drawing.Size(14, 13)
-        Me.RadioButton1.TabIndex = 9
-        Me.RadioButton1.TabStop = True
-        Me.RadioButton1.UseVisualStyleBackColor = True
+        Me.EndingDateRadioButton.AutoSize = True
+        Me.EndingDateRadioButton.Checked = True
+        Me.EndingDateRadioButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.EndingDateRadioButton.Location = New System.Drawing.Point(18, 87)
+        Me.EndingDateRadioButton.Name = "EndingDateRadioButton"
+        Me.EndingDateRadioButton.Size = New System.Drawing.Size(14, 13)
+        Me.EndingDateRadioButton.TabIndex = 9
+        Me.EndingDateRadioButton.TabStop = True
+        Me.EndingDateRadioButton.UseVisualStyleBackColor = True
         '
-        'RadioButton2
+        'NoOfDaysRadioButton
         '
-        Me.RadioButton2.AutoSize = True
-        Me.RadioButton2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RadioButton2.Location = New System.Drawing.Point(18, 155)
-        Me.RadioButton2.Name = "RadioButton2"
-        Me.RadioButton2.Size = New System.Drawing.Size(14, 13)
-        Me.RadioButton2.TabIndex = 10
-        Me.RadioButton2.UseVisualStyleBackColor = True
+        Me.NoOfDaysRadioButton.AutoSize = True
+        Me.NoOfDaysRadioButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.NoOfDaysRadioButton.Location = New System.Drawing.Point(18, 155)
+        Me.NoOfDaysRadioButton.Name = "NoOfDaysRadioButton"
+        Me.NoOfDaysRadioButton.Size = New System.Drawing.Size(14, 13)
+        Me.NoOfDaysRadioButton.TabIndex = 10
+        Me.NoOfDaysRadioButton.UseVisualStyleBackColor = True
         '
         'Label5
         '
@@ -164,15 +164,15 @@ Partial Class BatchForm
         Me.Label6.Text = "Note: Dates in bold will not have surveys printed. Click any days the service is " &
     "not operating."
         '
-        'StartButton
+        'RunBatchButton
         '
-        Me.StartButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.StartButton.Location = New System.Drawing.Point(145, 407)
-        Me.StartButton.Name = "StartButton"
-        Me.StartButton.Size = New System.Drawing.Size(100, 31)
-        Me.StartButton.TabIndex = 13
-        Me.StartButton.Text = "Run Batch"
-        Me.StartButton.UseVisualStyleBackColor = True
+        Me.RunBatchButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.RunBatchButton.Location = New System.Drawing.Point(145, 407)
+        Me.RunBatchButton.Name = "RunBatchButton"
+        Me.RunBatchButton.Size = New System.Drawing.Size(100, 31)
+        Me.RunBatchButton.TabIndex = 13
+        Me.RunBatchButton.Text = "Run Batch"
+        Me.RunBatchButton.UseVisualStyleBackColor = True
         '
         'BatchCancel
         '
@@ -205,11 +205,11 @@ Partial Class BatchForm
         Me.ClientSize = New System.Drawing.Size(800, 450)
         Me.Controls.Add(Me.BatchStatus)
         Me.Controls.Add(Me.BatchCancel)
-        Me.Controls.Add(Me.StartButton)
+        Me.Controls.Add(Me.RunBatchButton)
         Me.Controls.Add(Me.Label6)
         Me.Controls.Add(Me.Label5)
-        Me.Controls.Add(Me.RadioButton2)
-        Me.Controls.Add(Me.RadioButton1)
+        Me.Controls.Add(Me.NoOfDaysRadioButton)
+        Me.Controls.Add(Me.EndingDateRadioButton)
         Me.Controls.Add(Me.NumbOfDays)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.Label3)
@@ -235,11 +235,11 @@ Partial Class BatchForm
     Friend WithEvents Label3 As Label
     Friend WithEvents Label4 As Label
     Friend WithEvents NumbOfDays As NumericUpDown
-    Friend WithEvents RadioButton1 As RadioButton
-    Friend WithEvents RadioButton2 As RadioButton
+    Friend WithEvents EndingDateRadioButton As RadioButton
+    Friend WithEvents NoOfDaysRadioButton As RadioButton
     Friend WithEvents Label5 As Label
     Friend WithEvents Label6 As Label
-    Friend WithEvents StartButton As Button
+    Friend WithEvents RunBatchButton As Button
     Friend WithEvents BatchCancel As Button
     Friend WithEvents BatchStatus As RichTextBox
 End Class
