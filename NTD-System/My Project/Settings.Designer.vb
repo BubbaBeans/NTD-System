@@ -273,18 +273,6 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("349, 146")>  _
-        Public Property FormSize() As Global.System.Drawing.Size
-            Get
-                Return CType(Me("FormSize"),Global.System.Drawing.Size)
-            End Get
-            Set
-                Me("FormSize") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
         Public Property AudibleNotificationsEnabled() As Boolean
             Get

@@ -17,3 +17,4 @@ Imports System.Diagnostics.CodeAnalysis
 <Assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification:="<Pending>", Scope:="member", Target:="~F:NTD_System.SurveyEntry.TOfDay")>
 <Assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification:="<Pending>", Scope:="member", Target:="~F:NTD_System.SurveyEntry.TotalWorkbook")>
 <Assembly: SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification:="<Pending>", Scope:="member", Target:="~M:NTD_System.BatchForm.RunBatchButton_Click(System.Object,System.EventArgs)")>
+<Assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification:="<Pending>", Scope:="member", Target:="~F:NTD_System.NtdSettings._DayIndex")>

@@ -1,4 +1,5 @@
 ﻿Public NotInheritable Class SplashScreen1
+    Public Settings As New NtdSettings
     Public WDSurvNums As New List(Of Route)
     Public SDSurvNums As New List(Of Route)
 
