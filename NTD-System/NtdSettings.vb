@@ -25,6 +25,10 @@
     Private _FormSize As New Size(349, 146)
     Private _Audible As Boolean = True 'Switch to determine whether or not to include audible warnings
 
+    Public Sub New()
+
+    End Sub
+
     Public Function NewSettings(SettingsDate As String) As Boolean
         Return Convert.ToDateTime(SettingsDate + " 12:01:00AM") > _SetDat
     End Function
