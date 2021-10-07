@@ -64,28 +64,45 @@ Public Class FormSettings
     End Function
 
     Private Sub DunButt_Click(sender As Object, e As EventArgs) Handles DunButt.Click
-        With My.Settings
+        'With My.Settings
+        '.BaseLocation = Trim(CStr(BaseBox.Text))
+        '.CompletedLocation = Trim(CStr(CompBox.Text))
+        '.DayIndex = BoolToString(DayArray)
+        '.DiffDay = BoolToString(DifferentSurvey)
+        '.NumSurveys = CInt(nSurv.Value)
+        '.SurveyFileName = Trim(CStr(SurveyFName.Text))
+        '.SettingsFileName = Trim(CStr(SettingsFName.Text))
+        '.RouteRunFileName = Trim(CStr(RRFN.Text))
+        '.WeekdayBatchFileName = Trim(CStr(WDBatchName.Text))
+        '.WeekendBatchFileName = Trim(CStr(WEBatchName.Text))
+        '.CreatedLocation = Trim(CStr(CreatedSurveys.Text))
+        '.TotalFile = Trim(CStr(TotalFileName.Text))
+        '.AMPeak = Trim(CStr(AMPeakPicker.Value))
+        '.Afternoon = Trim(CStr(AfternoonPicker.Value))
+        '.PMPeak = Trim(CStr(PMPicker.Value))
+        '.VehCapFile = Trim(CStr(VCapName.Text))
+        '.Save()
+        'End With
+        With SplashScreen1.Settings
             .BaseLocation = Trim(CStr(BaseBox.Text))
             .CompletedLocation = Trim(CStr(CompBox.Text))
-            .DayIndex = BoolToString(DayArray)
-            .DiffDay = BoolToString(DifferentSurvey)
-            .NumSurveys = CInt(nSurv.Value)
-            .SurveyFileName = Trim(CStr(SurveyFName.Text))
-            .SettingsFileName = Trim(CStr(SettingsFName.Text))
-            .RouteRunFileName = Trim(CStr(RRFN.Text))
-            .WeekdayBatchFileName = Trim(CStr(WDBatchName.Text))
-            .WeekendBatchFileName = Trim(CStr(WEBatchName.Text))
-            .CreatedLocation = Trim(CStr(CreatedSurveys.Text))
-            .TotalFile = Trim(CStr(TotalFileName.Text))
+            '.DayIndex = BoolToString(DayArray)
+            '.DiffDay = BoolToString(DifferentSurvey)
+            .SurveysPerWeek = CInt(nSurv.Value)
+            .NameOfSurveyFile = Trim(CStr(SurveyFName.Text))
+            .NameOfSettingsFile = Trim(CStr(SettingsFName.Text))
+            .NameOfRouteRunFile = Trim(CStr(RRFN.Text))
+            .WeekdayBatchFile = Trim(CStr(WDBatchName.Text))
+            .WeekendBatchFile = Trim(CStr(WEBatchName.Text))
+            .CreatedSurveyLocation = Trim(CStr(CreatedSurveys.Text))
+            .SurveyTotalFile = Trim(CStr(TotalFileName.Text))
             .AMPeak = Trim(CStr(AMPeakPicker.Value))
             .Afternoon = Trim(CStr(AfternoonPicker.Value))
             .PMPeak = Trim(CStr(PMPicker.Value))
-            .VehCapFile = Trim(CStr(VCapName.Text))
-            .Save()
+            .VehicleCapacityFile = Trim(CStr(VCapName.Text))
         End With
         Me.Hide()
         Me.Close()
-
     End Sub
 
     Private Sub F9_Key(sender As Object, e As KeyEventArgs) Handles Me.KeyDown

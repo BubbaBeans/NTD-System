@@ -190,7 +190,7 @@ Public Class BatchForm
                         Surveys.Add(New Survey(serial, CDate(CurrDate & " " & SingleSurvey.Times(CInt(RunPart) - 1)), SingleSurvey.SheetName))
 GoAheadAndJump:
                     Next
-                    Status("Printing", False)
+                    Status("Printing " & FormatDateTime(CurrDate, DateFormat.ShortDate), False)
                     If PrintSheets(Surveys, True, False) <> "None" Then
                         If MsgBox("Should surveys continue to print?", vbYesNo) = vbNo Then GoTo OuttaHere
                     End If
