@@ -28,6 +28,89 @@
     Public Sub New()
 
     End Sub
+    Public Sub ReadSettings(Optional FileName As String = ".")
+        If FileName = "." Then
+            FileName = _Base + "\" + _SettingsFName
+        End If
+        If System.IO.File.Exists(FileName) Then
+            Using reader As New IO.BinaryReader(IO.File.Open(FileName, IO.FileMode.Open))
+                Dim SetAsDefault As Boolean = reader.ReadBoolean
+                _DomName = reader.ReadString
+                For i = 0 To 6
+                    _OperatingDays(i) = reader.ReadBoolean
+                    _DifferentSurvey(i) = reader.ReadBoolean
+                Next
+                _Base = reader.ReadString
+                _Comp = reader.ReadString
+                _EntryMasterLoc = reader.ReadString
+                _DataLoc = reader.ReadString
+                _SurveysPerWeek = reader.ReadInt32
+                If SetAsDefault Then
+                    _DefltSettings = reader.ReadString
+                End If
+                _SurveyFName = reader.ReadString
+                _SettingsFName = reader.ReadString
+                _RRNam = reader.ReadString
+                _WDBatch = reader.ReadString
+                _WEBatch = reader.ReadString
+                _Created = reader.ReadString
+                _TotFile = reader.ReadString
+                _AmPeak = reader.ReadString
+                _After = reader.ReadString
+                _PmPeak = reader.ReadString
+                _VehCap = reader.ReadString
+                _FormSize.Height = reader.ReadInt32
+                _FormSize.Width = reader.ReadInt32
+                _Audible = reader.ReadBoolean
+            End Using
+            _SetDat = Now
+        End If
+    End Sub
+    Public Sub WriteSettings(Optional MakeDefault As Boolean = False, Optional FileName As String = ".")
+        If FileName = "." Then
+            FileName = _Base + "\" + _SettingsFName
+        End If
+        If IO.File.Exists(FileName) Then
+            IO.File.Copy(FileName, FileName + "--BAK--", True)
+        End If
+        Try
+            Using w As New IO.BinaryWriter(IO.File.Open(FileName, IO.FileMode.Create))
+                w.Write(MakeDefault)
+                w.Write(_DomName)
+                For i = 0 To 6
+                    w.Write(_OperatingDays(i))
+                    w.Write(_DifferentSurvey(i))
+                Next
+                w.Write(_Base)
+                w.Write(_Comp)
+                w.Write(_EntryMasterLoc)
+                w.Write(_DataLoc)
+                w.Write(_SurveysPerWeek)
+                If MakeDefault Then
+                    w.Write(_DefltSettings)
+                End If
+                w.Write(_SurveyFName)
+                w.Write(_SettingsFName)
+                w.Write(_RRNam)
+                w.Write(_WDBatch)
+                w.Write(_WEBatch)
+                w.Write(_Created)
+                w.Write(_TotFile)
+                w.Write(_AmPeak)
+                w.Write(_After)
+                w.Write(_PmPeak)
+                w.Write(_VehCap)
+                w.Write(_FormSize.Height)
+                w.Write(_FormSize.Width)
+                w.Write(_Audible)
+                w.Flush()
+            End Using
+        Catch ex As Exception
+            MsgBox("Error writing the file.  Reverting to backed up settings", vbOKOnly, "WARNING")
+            IO.File.Copy(FileName + "--BAK--", FileName, True)
+        End Try
+        If IO.File.Exists(FileName + "--BAK--") Then IO.File.Delete(FileName + "--BAK--")
+    End Sub
 
     Public Function NewSettings(SettingsDate As String) As Boolean
         Return Convert.ToDateTime(SettingsDate + " 12:01:00AM") > _SetDat

@@ -23,27 +23,27 @@ Public Class SurveyEntry
     ' =========================================================================================================================================
 
     ' The following Const contain the column indexes so they can be referenced by name
-    Const Odo As Integer = 2
-    Const PBoard As Integer = 3
-    Const PDBoard As Integer = 4
-    Const POB As Integer = 5
-    Const DBS As Integer = 6
-    Const PM As Integer = 7
+    Private Const Odo As Integer = 2
+    Private Const PBoard As Integer = 3
+    Private Const PDBoard As Integer = 4
+    Private Const POB As Integer = 5
+    Private Const DBS As Integer = 6
+    Private Const PM As Integer = 7
 
     'Dim PassedChecks As Boolean = True ' Indicates whether data in the grid has been verified and has no errors
-    Dim CurrentlyUpdating As Boolean = False ' Tracks whether the data is updating on the DataGridView
-    Dim LastRow As Integer = 0
-    Dim WorkingCell As DataGridViewCell
-    Dim WorkingSurvey As New EnteredSurvey
-    Dim DOWeek As Integer
-    Dim TOfDay As String
-    Dim TotalCapacity As Integer
-    Dim SeatedCapacity As Integer
-    Dim VehicleInfo As List(Of String())
-    Dim TotalWorkbook As New ReoGridControl
-    Dim PreviouslySelectedRow As Integer = 0
-    Dim nonNumberEntered As Boolean = False
-    Dim WarningSounded As Boolean = True
+    Private CurrentlyUpdating As Boolean = False ' Tracks whether the data is updating on the DataGridView
+    Private LastRow As Integer = 0
+    Private WorkingCell As DataGridViewCell
+    Private WorkingSurvey As New EnteredSurvey
+    Private DOWeek As Integer
+    Private TOfDay As String
+    Private TotalCapacity As Integer
+    Private SeatedCapacity As Integer
+    Private VehicleInfo As List(Of String())
+    Private TotalWorkbook As New ReoGridControl
+    Private PreviouslySelectedRow As Integer = 0
+    Private nonNumberEntered As Boolean = False
+    Private WarningSounded As Boolean = True
     'Dim PrevValue As New DataGridViewRow
     Private Sub SurveyEntry_Load(sender As Object, e As EventArgs) Handles Me.Load
         VehicleInfo = ReadVehicleFile()
@@ -203,7 +203,7 @@ Public Class SurveyEntry
         ResumeDrawing(dgrid)
     End Sub
 
-    Private Sub Update_POB(ByRef dgrid As DataGridView, ChangedRow As Integer)
+    Public Shared Sub Update_POB(ByRef dgrid As DataGridView, ChangedRow As Integer)
         SuspendDrawing(dgrid)
         Dim POnBrd As Integer
         Dim Index As Integer = 0
@@ -219,7 +219,7 @@ Public Class SurveyEntry
         ResumeDrawing(dgrid)
     End Sub
 
-    Private Sub Update_DBStops(ByRef dgrid As DataGridView, ChangedRow As Integer)
+    Public Shared Sub Update_DBStops(ByRef dgrid As DataGridView, ChangedRow As Integer)
         SuspendDrawing(dgrid)
         If ChangedRow <> 0 Then
             Dim PrevRow As Integer = FindPrevious(dgrid, ChangedRow)
@@ -233,7 +233,7 @@ Public Class SurveyEntry
         ResumeDrawing(dgrid)
     End Sub
 
-    Private Sub Update_PMiles(ByRef dgrid As DataGridView, ChangedRow As Integer)
+    Public Shared Sub Update_PMiles(ByRef dgrid As DataGridView, ChangedRow As Integer)
         SuspendDrawing(dgrid)
         If ChangedRow <> 0 Then
             'Dim PrevRow As Integer = FindPrevious(dgrid, ChangedRow)
@@ -275,7 +275,7 @@ Public Class SurveyEntry
         Return Rtn
     End Function
 
-    Shared Function FindPrevious(dgrid As DataGridView, CurrentRow As Integer) As Integer
+    Public Shared Function FindPrevious(dgrid As DataGridView, CurrentRow As Integer) As Integer
         ' Returns the row index of the last entered data.  Used to calculate passengers on board and passenger miles between stops
         Dim Index As Integer = CurrentRow - 1
         Dim Rtn As Integer = 0
@@ -683,7 +683,8 @@ Public Class SurveyEntry
         End If
         PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.ding)
     End Sub
-    Private Sub PlaySound(Optional ShouldIPlay As Boolean = True, Optional SoundToPlay As System.IO.Stream = Nothing)
+
+    Public Shared Sub PlaySound(Optional ShouldIPlay As Boolean = True, Optional SoundToPlay As System.IO.Stream = Nothing)
         If My.Settings.AudibleNotificationsEnabled Then
             My.Computer.Audio.Play(SoundToPlay, AudioPlayMode.Background)
         End If
