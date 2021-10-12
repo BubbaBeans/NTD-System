@@ -1,5 +1,5 @@
-﻿Public NotInheritable Class SplashScreen1
-    Public Settings As New NtdSettings
+﻿
+Public NotInheritable Class SplashScreen1
     Public WDSurvNums As New List(Of Route)
     Public SDSurvNums As New List(Of Route)
 
@@ -19,7 +19,8 @@
             Something = CStr(My.Application.CommandLineArgs.Item(0))
         End If
         MainForm.Status("Checking for software updates.", False)
-        UpdateSettings(Something)
+        MainForm.GlobalSettings.ReadSettings(Something)
+        'UpdateSettings(Something)
         If Not Comm.CheckConnection() Then
             MsgBox("There is a problem connecting to the NTD Surveys.  This program will exit.", vbOKOnly, "Connection Problem")
             End

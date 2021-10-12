@@ -13,9 +13,11 @@ Public Class BatchForm
         EndDatePicker.Value = DateAdd(DateInterval.Day, 7, StartDatePicker.Value)
         SetupCalendar(MonthCalendar1, FirstDayofMonth(FirstMonday(Now)), 1)
         Status("Reading Weekday Batch File", False)
-        ReadBatchFile(My.Settings.BaseLocation & My.Settings.WeekdayBatchFileName, WeekdayBatch)
+        'ReadBatchFile(My.Settings.BaseLocation & My.Settings.WeekdayBatchFileName, WeekdayBatch)
+        ReadBatchFile(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.WeekdayBatchFile, WeekdayBatch)
         Status("Reading Weekend Batch File", False)
-        ReadBatchFile(My.Settings.BaseLocation & My.Settings.WeekendBatchFileName, WeekendBatch)
+        'ReadBatchFile(My.Settings.BaseLocation & My.Settings.WeekendBatchFileName, WeekendBatch)
+        ReadBatchFile(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.WeekendBatchFile, WeekendBatch)
         Status("Done Reading Files", False)
         Status(clear:=True)
     End Sub
@@ -25,13 +27,14 @@ Public Class BatchForm
         '  usually a day on which the transit system is closed
         Status(clear:=True)
         Dim loopDate As Date = dt
-        Dim testNum As Integer = 0
+        'Dim testNum As Integer = 0
         Dim dtarray As New List(Of Date)
         dtarray.AddRange(Comm.HolidaysBetween(dt, ed, BatchStatus))
 
         While CDate(loopDate) <= CDate(ed)
-            testNum = loopDate.DayOfWeek + 1
-            If Mid(My.Settings.DayIndex, testNum, 1) = "F" Then
+            'testNum = loopDate.DayOfWeek + 1
+            'If Mid(My.Settings.DayIndex, testNum, 1) = "F" Then
+            If Not MainForm.GlobalSettings.OperatesOnThisDay(loopDate.DayOfWeek) Then
                 dtarray.Add(CDate(loopDate.ToShortDateString))
             End If
             loopDate = loopDate.AddDays(1)
@@ -95,7 +98,8 @@ Public Class BatchForm
         End If
     End Function
     Private Sub MonthCalendar1_DateSelected(sender As Object, e As DateRangeEventArgs) Handles MonthCalendar1.DateSelected
-        If My.Settings.DayIndex(e.Start.DayOfWeek) <> "F" Then ' Checks to ensure it is a day we are running.
+        If MainForm.GlobalSettings.OperatesOnThisDay(e.Start.DayOfWeek) Then
+            'If My.Settings.DayIndex(e.Start.DayOfWeek) <> "F" Then ' Checks to ensure it is a day we are running.
             Dim index = Array.IndexOf(MonthCalendar1.BoldedDates, e.Start.Date)
             If index = -1 Then
                 MonthCalendar1.AddBoldedDate(e.Start.Date)

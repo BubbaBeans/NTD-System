@@ -1,12 +1,12 @@
 ﻿Imports System.Globalization
 '<Assembly: Resources.NeutralResourcesLanguage("en-us")>
 Public Class MainForm
-
+    Public GlobalSettings As New NtdSettings
     'Private NoSurveys() As Date
     Public StatusSpacer As String = vbNewLine & "        "
     Public r As New Random
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        sNum.Value = My.Settings.NumSurveys
+        sNum.Value = GlobalSettings.SurveysPerWeek
         Dim SDate As Date = FirstMonday(Now)
         StartDatePicker.Value = SDate
         Status(clear:=True)
@@ -18,14 +18,12 @@ Public Class MainForm
         '  A bolded date is a date on which the system should not produce a survey,
         '  usually a day on which the transit system is closed
         Dim loopDate As Date = dt
-        Dim testNum As Integer = 0
         Dim dtarray As New List(Of Date)
         Status(clear:=True)
         dtarray.AddRange(Comm.HolidaysBetween(dt, ed, StatusText))
 
         While CDate(loopDate) <= CDate(ed)
-            testNum = loopDate.DayOfWeek + 1
-            If Mid(My.Settings.DayIndex, testNum, 1) = "F" Then
+            If Not GlobalSettings.OperatesOnThisDay(loopDate.DayOfWeek) Then 'Mid(My.Settings.DayIndex, testNum, 1) = "F" Then
                 dtarray.Add(loopDate)
             End If
             loopDate = loopDate.AddDays(1)
@@ -100,14 +98,16 @@ Public Class MainForm
         End If
     End Function
     Private Sub MonthCalendar1_DateSelected(sender As Object, e As DateRangeEventArgs) Handles MonthCalendar1.DateSelected
-        If My.Settings.DayIndex(e.Start.DayOfWeek) = "F" Then Exit Sub
-        Dim index = Array.IndexOf(MonthCalendar1.BoldedDates, e.Start.Date)
-        If index = -1 Then
-            MonthCalendar1.AddBoldedDate(e.Start.Date)
-        Else
-            MonthCalendar1.RemoveBoldedDate(e.Start.Date)
+        'If My.Settings.DayIndex(e.Start.DayOfWeek) = "F" Then Exit Sub
+        If GlobalSettings.OperatesOnThisDay(e.Start.DayOfWeek) Then
+            Dim index = Array.IndexOf(MonthCalendar1.BoldedDates, e.Start.Date)
+            If index = -1 Then
+                MonthCalendar1.AddBoldedDate(e.Start.Date)
+            Else
+                MonthCalendar1.RemoveBoldedDate(e.Start.Date)
+            End If
+            MonthCalendar1.UpdateBoldedDates()
         End If
-        MonthCalendar1.UpdateBoldedDates()
     End Sub
 
     Private Sub DoneButt_Click(sender As Object, e As EventArgs) Handles DoneButt.Click

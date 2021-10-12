@@ -5,103 +5,103 @@ Module Comm
     Friend Function CheckConnection() As Boolean
         CheckConnection = File.Exists(My.Settings.BaseLocation & My.Settings.SurveyFileName)
     End Function
-    Friend Sub UpdateSettings(Optional fyle As String = ".")
-        '  Settings can be updated by placing a settings file on the server
-        '  It's a simple CSV file, with the first value of the second line indicating the type
-        '  of settings file.  0xC000 indicates a valid file including changes for everything
-        '  Further codes can be implemented here for various reasons.
-        If fyle <> "." Then
-            File.Delete(My.Settings.BaseLocation & My.Settings.SettingsFileName)
-            File.Copy(fyle, My.Settings.BaseLocation & My.Settings.SettingsFileName)
-        End If
-        fyle = My.Settings.SettingsFileName
-
-        If File.Exists(My.Settings.BaseLocation & fyle) Then
-            Dim StngsFile As New StreamReader(My.Settings.BaseLocation & fyle)
-            Dim Line, stings() As String
-            Line = StngsFile.ReadLine() 'First line is the date of the settings.  This allows for
-            '  for an updates settings file to be created ahead of time, placed on the server, and
-            '  the changes won't take effect until the date on the first line of the file.
-            If CDate(Line) >= CDate(My.Settings.SetDat) Then
-                Do While StngsFile.Peek() >= 0
-                    Line = StngsFile.ReadLine
-                    stings = Line.Split(CChar(","))
-                    If stings(0) = "0xC000" Then
-                        '  0xC000 indicates that all of the settings are to be changed.
-                        '  On one line, following the code, are the settings in plain text
-                        '  in this order:
-                        '
-                        '  1. T or F, indicating whether or not to update the default settings
-                        '  2. Base location for the NTD files on the server
-                        '  3. A series of T and F indicating whether the service runs on each
-                        '       individual day of the week
-                        '  4. A series of T and F indicating whether an individual day requires
-                        '       a different type of survey
-                        '  5. The location in which to store completed surveys
-                        '  6. The number of surveys per week
-                        '  7. The name of the settings file
-                        '  8. The name of the main survey file
-                        '  9. The name of the Route/Run file
-                        ' The next two settings are the names of the file that holds the batch runs,
-                        '       which contains the paired route/runs in order to print full surveys
-                        '       in batches
-                        ' 10. The name of the batch file for weekday surveys
-                        ' 11. The name of the batch file for weekend surveys
-                        ' 12.  The location in which to store the created survey logs
-                        ' 13. The name of the file used to store the survey totals
-                        ' 14. AM Peak Start Time
-                        ' 15. Afternoon Start Time
-                        ' 16. PM Peak Start Time
-                        ' 17. Vehicle Capacity File Name
-                        ' 18. All of the updated default settings, in the order given in this list,
-                        '       but NOT comma separated. Instead, use the vertical separator |
-                        With My.Settings
-                            .BaseLocation = Trim(stings(2))
-                            .DayIndex = Trim(stings(3))
-                            .DiffDay = Trim(stings(4))
-                            .CompletedLocation = Trim(stings(5))
-                            .NumSurveys = CInt(Trim(stings(6)))
-                            .SettingsFileName = Trim(stings(7))
-                            .SurveyFileName = Trim(stings(8))
-                            .RouteRunFileName = Trim(stings(9))
-                            .WeekdayBatchFileName = Trim(stings(10))
-                            .WeekendBatchFileName = Trim(stings(11))
-                            .CreatedLocation = Trim(stings(12))
-                            .TotalFile = Trim(stings(13))
-                            .AMPeak = Trim(stings(14))
-                            .Afternoon = Trim(stings(15))
-                            .PMPeak = Trim(stings(16))
-                            .VehCapFile = Trim(stings(17))
-                            If Trim(stings(1)) = "T" Then
-                                .Defaults = FormSettings.SwitchComma(stings(18))
-                            End If
-                            .SetDat = Now
-                        End With
-                    End If
-                Loop
-                StngsFile.Close()
-            End If
-        End If
-
-        InstallUpdateSyncWithInfo()
-    End Sub
-    Friend Sub StoreNewSettings(base As String, dayin As String, diffday As String, complet As String, survnum As Integer)
-        '  If changes are made, this sub allows the changes to be written to a CSV
-        With My.Settings
-            If File.Exists(.BaseLocation & .SettingsFileName) Then
-                File.Delete(.BaseLocation & .SettingsFileName)
-                Dim SFile As New StreamWriter(.BaseLocation & .SettingsFileName)
-                Dim c As String = ","
-                SFile.WriteLine(CStr(Now))
-                Dim line As String = "0xC000,F," & c & Trim(base) & c & Trim(dayin) & c & Trim(diffday) & c & Trim(complet) & c & Trim(CStr(survnum)) & c & Trim(.SettingsFileName) & c
-                line &= Trim(.SurveyFileName) & c & Trim(.RouteRunFileName) & c & Trim(.WeekdayBatchFileName) & c & Trim(.WeekendBatchFileName) & c & Trim(.TotalFile)
-                line &= Trim(.AMPeak) & c & Trim(.Afternoon) & c & Trim(.PMPeak) & c & Trim(.VehCapFile)
-                SFile.WriteLine(line)
-                SFile.Flush()
-                SFile.Close()
-            End If
-        End With
-    End Sub
+    ' Friend Sub UpdateSettings(Optional fyle As String = ".")
+    ' '  Settings can be updated by placing a settings file on the server
+    ' '  It's a simple CSV file, with the first value of the second line indicating the type
+    ' '  of settings file.  0xC000 indicates a valid file including changes for everything
+    ' '  Further codes can be implemented here for various reasons.
+    ' If fyle <> "." Then
+    '         File.Delete(My.Settings.BaseLocation & My.Settings.SettingsFileName)
+    '         File.Copy(fyle, My.Settings.BaseLocation & My.Settings.SettingsFileName)
+    ' End If
+    '     fyle = My.Settings.SettingsFileName
+    '
+    '    If File.Exists(My.Settings.BaseLocation & fyle) Then
+    '    Dim StngsFile As New StreamReader(My.Settings.BaseLocation & fyle)
+    '    Dim Line, stings() As String
+    '            Line = StngsFile.ReadLine() 'First line is the date of the settings.  This allows for
+    '    '  for an updates settings file to be created ahead of time, placed on the server, and
+    '    '  the changes won't take effect until the date on the first line of the file.
+    '    If CDate(Line) >= CDate(My.Settings.SetDat) Then
+    '    Do While StngsFile.Peek() >= 0
+    '                    Line = StngsFile.ReadLine
+    '                    stings = Line.Split(CChar(","))
+    '    If stings(0) = "0xC000" Then
+    '    '  0xC000 indicates that all of the settings are to be changed.
+    '    '  On one line, following the code, are the settings in plain text
+    '    '  in this order:
+    '    '
+    '    '  1. T or F, indicating whether or not to update the default settings
+    '    '  2. Base location for the NTD files on the server
+    '    '  3. A series of T and F indicating whether the service runs on each
+    '    '       individual day of the week
+    '    '  4. A series of T and F indicating whether an individual day requires
+    '    '       a different type of survey
+    '    '  5. The location in which to store completed surveys
+    '    '  6. The number of surveys per week
+    '    '  7. The name of the settings file
+    '    '  8. The name of the main survey file
+    '    '  9. The name of the Route/Run file
+    '    ' The next two settings are the names of the file that holds the batch runs,
+    '    '       which contains the paired route/runs in order to print full surveys
+    '    '       in batches
+    '    ' 10. The name of the batch file for weekday surveys
+    '    ' 11. The name of the batch file for weekend surveys
+    '    ' 12.  The location in which to store the created survey logs
+    '    ' 13. The name of the file used to store the survey totals
+    '    ' 14. AM Peak Start Time
+    '    ' 15. Afternoon Start Time
+    '    ' 16. PM Peak Start Time
+    '    ' 17. Vehicle Capacity File Name
+    '    ' 18. All of the updated default settings, in the order given in this list,
+    '    '       but NOT comma separated. Instead, use the vertical separator |
+    '    With My.Settings
+    '    .BaseLocation = Trim(stings(2))
+    '    .DayIndex = Trim(stings(3))
+    '    .DiffDay = Trim(stings(4))
+    '    .CompletedLocation = Trim(stings(5))
+    '    .NumSurveys = CInt(Trim(stings(6)))
+    '    .SettingsFileName = Trim(stings(7))
+    '    .SurveyFileName = Trim(stings(8))
+    '    .RouteRunFileName = Trim(stings(9))
+    '    .WeekdayBatchFileName = Trim(stings(10))
+    '    .WeekendBatchFileName = Trim(stings(11))
+    '    .CreatedLocation = Trim(stings(12))
+    '    .TotalFile = Trim(stings(13))
+    '    .AMPeak = Trim(stings(14))
+    '    .Afternoon = Trim(stings(15))
+    '    .PMPeak = Trim(stings(16))
+    '    .VehCapFile = Trim(stings(17))
+    '    If Trim(stings(1)) = "T" Then
+    '    .Defaults = FormSettings.SwitchComma(stings(18))
+    '    End If
+    '    .SetDat = Now
+    '    End With
+    '    End If
+    '    Loop
+    '                StngsFile.Close()
+    '    End If
+    '    End If
+    '
+    '       InstallUpdateSyncWithInfo()
+    '  End Sub
+    ' Friend Sub StoreNewSettings(base As String, dayin As String, diffday As String, complet As String, survnum As Integer)
+    ' '  If changes are made, this sub allows the changes to be written to a CSV
+    ' With My.Settings
+    ' If File.Exists(.BaseLocation & .SettingsFileName) Then
+    '             File.Delete(.BaseLocation & .SettingsFileName)
+    ' Dim SFile As New StreamWriter(.BaseLocation & .SettingsFileName)
+    ' Dim c As String = ","
+    '             SFile.WriteLine(CStr(Now))
+    ' Dim line As String = "0xC000,F," & c & Trim(base) & c & Trim(dayin) & c & Trim(diffday) & c & Trim(complet) & c & Trim(CStr(survnum)) & c & Trim(.SettingsFileName) & c
+    '             line &= Trim(.SurveyFileName) & c & Trim(.RouteRunFileName) & c & Trim(.WeekdayBatchFileName) & c & Trim(.WeekendBatchFileName) & c & Trim(.TotalFile)
+    '             line &= Trim(.AMPeak) & c & Trim(.Afternoon) & c & Trim(.PMPeak) & c & Trim(.VehCapFile)
+    '             SFile.WriteLine(line)
+    '             SFile.Flush()
+    '             SFile.Close()
+    ' End If
+    ' End With
+    ' End Sub
     Private Sub InstallUpdateSyncWithInfo()
         Dim info As UpdateCheckInfo '= Nothing
 
@@ -149,7 +149,8 @@ Module Comm
         End If
     End Sub
     Friend Sub ReadSurveyInfo(ByRef Wday As List(Of Route), ByRef Sday As List(Of Route))
-        Using sr As New StreamReader(My.Settings.BaseLocation & My.Settings.RouteRunFileName)
+        'Using sr As New StreamReader(My.Settings.BaseLocation & My.Settings.RouteRunFileName)
+        Using sr As New StreamReader(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.NameOfRouteRunFile)
             MainForm.Status("", False)
             Do Until sr.EndOfStream
                 Dim line() As String = sr.ReadLine().Split(","c)
@@ -172,7 +173,8 @@ Module Comm
     End Sub
     Friend Sub SaveSurveys(ByVal Srvys As List(Of Survey))
         Dim serializer As New XmlSerializer(GetType(List(Of Survey)))
-        Dim FyleName As String = My.Settings.CreatedLocation & "\" & Format(Now, "mmddyyyy") & ".srv"
+        'Dim FyleName As String = My.Settings.CreatedLocation & "\" & Format(Now, "mmddyyyy") & ".srv"
+        Dim FyleName As String = MainForm.GlobalSettings.CreatedSurveyLocation & "\" & Format(Now, "mmddyyyy") & ".srv"
         If Not System.IO.File.Exists(FyleName) Then
             System.IO.File.Create(FyleName).Dispose()
         End If
@@ -197,7 +199,8 @@ Module Comm
         Using sw As New SaveFileDialog
             sw.Filter = "Comma Separated Value|*.csv"
             sw.Title = "Save Settings File As"
-            sw.FileName = My.Settings.SettingsFileName
+            'sw.FileName = My.Settings.SettingsFileName
+            sw.FileName = MainForm.GlobalSettings.NameOfSettingsFile
             If sw.ShowDialog = Windows.Forms.DialogResult.OK Then
                 If Not String.IsNullOrEmpty(sw.FileName) Then
                     My.Computer.FileSystem.WriteAllText(sw.FileName, settings, False)
@@ -207,7 +210,8 @@ Module Comm
     End Sub
     Public Function ReadVehicleFile() As List(Of String())
         Dim Info As New List(Of String())
-        Using sr As New StreamReader(My.Settings.BaseLocation & "\" & My.Settings.VehCapFile)
+        'Using sr As New StreamReader(My.Settings.BaseLocation & "\" & My.Settings.VehCapFile)
+        Using sr As New StreamReader(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.VehicleCapacityFile)
             Do Until sr.EndOfStream
                 Dim Line() As String = sr.ReadLine().Split(","c)
                 Info.Add(Line)

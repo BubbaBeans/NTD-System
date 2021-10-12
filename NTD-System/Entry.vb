@@ -3,7 +3,7 @@ Module Entry
     Friend Function CSVtoDataSource(RouteFile As String, ByRef grid As DataGridView, ByRef SurveyThingy As EnteredSurvey) As Boolean
         Dim DidItWork As Boolean = True
         Try
-            Using SR As New StreamReader(My.Settings.BaseLocation & "\SurveyEntryMasters\" & RouteFile)
+            Using SR As New StreamReader(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.SurveyMastersLocation & "\" & RouteFile)
 
                 Dim line As String
                 Do Until SR.EndOfStream
