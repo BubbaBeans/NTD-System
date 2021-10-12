@@ -1,5 +1,5 @@
 ﻿'Imports System.Linq
-Imports System.ComponentModel
+'Imports System.ComponentModel
 Imports unvell.ReoGrid
 Imports System.Runtime.InteropServices
 
@@ -55,7 +55,8 @@ Public Class SurveyEntry
         'VehComboBox.AutoCompleteMode = AutoCompleteMode.Suggest
         VehComboBox.AutoCompleteCustomSource = AutoCompleteCollection
         'VehComboBox.BackColor = SystemColors.Window
-        TotalWorkbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
+        'TotalWorkbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
+        TotalWorkbook.Load(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.SurveyTotalFile, IO.FileFormat.Excel2007)
         With SurveyView
             .Columns("StopNo").ReadOnly = True
             .Columns("StopName").ReadOnly = True
@@ -64,7 +65,7 @@ Public Class SurveyEntry
             .Columns("DistBetStop").ReadOnly = True
             .Columns("PassMiles").ReadOnly = True
         End With
-        If My.Settings.AudibleNotificationsEnabled Then
+        If MainForm.GlobalSettings.AudibleAlert Then
             SpeakerBox.Image = My.Resources.Speaker_On
         Else
             SpeakerBox.Image = My.Resources.Speaker_Off
@@ -162,7 +163,8 @@ Public Class SurveyEntry
         Else
             If SurveyView.Tag > 0 And Not WarningSounded Then
                 WarningSounded = True
-                PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.sound_wrong)
+                '                PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.sound_wrong)
+                PlaySound(MainForm.GlobalSettings.AudibleAlert, My.Resources.sound_wrong)
             End If
         End If
         SaveButton.Enabled = (SurveyView.Tag = 0)
@@ -352,10 +354,12 @@ Public Class SurveyEntry
             .Cells("M" & BottomLine.ToString()).Data = Convert.ToDouble(SV.PassengerMiles)
             .Cells("X2").Data = BottomLine + 1
         End With
-        TotalWorkbook.Save(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
+        'TotalWorkbook.Save(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
+        TotalWorkbook.Save(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.SurveyTotalFile, IO.FileFormat.Excel2007)
         'Sheet = Nothing
         'TotalWorkbook = Nothing
-        PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.ding)
+        'PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.ding)
+        PlaySound(MainForm.GlobalSettings.AudibleAlert, My.Resources.ding)
         SavedLabel.ForeColor = Color.Red
         SavedLabel.Visible = True
         SavedLabelTimer.Enabled = True
@@ -389,9 +393,11 @@ Public Class SurveyEntry
             Return New String() {"Error", "Error"}
         End Try
         Dim TimePeriod As String = "Afternoon"
-        If DateTime.Parse(TOD) >= DateTime.Parse(My.Settings.PMPeak) Then
+        'If DateTime.Parse(TOD) >= DateTime.Parse(My.Settings.PMPeak) Then
+        If DateTime.Parse(TOD) >= DateTime.Parse(MainForm.GlobalSettings.PMPeak) Then
             TimePeriod = "PM Peak"
-        ElseIf DateTime.Parse(TOD) < DateTime.Parse(My.Settings.Afternoon) Then
+            'ElseIf DateTime.Parse(TOD) < DateTime.Parse(My.Settings.Afternoon) Then
+        ElseIf DateTime.Parse(TOD) < DateTime.Parse(MainForm.GlobalSettings.Afternoon) Then
             TimePeriod = "AM Peak"
         End If
         WorkingSurvey.TimePeriod = TimePeriod
@@ -675,17 +681,20 @@ Public Class SurveyEntry
     End Sub
 
     Private Sub SpeakerBox_Click(sender As Object, e As EventArgs) Handles SpeakerBox.Click
-        My.Settings.AudibleNotificationsEnabled = Not My.Settings.AudibleNotificationsEnabled
-        If My.Settings.AudibleNotificationsEnabled Then
+        'My.Settings.AudibleNotificationsEnabled = Not My.Settings.AudibleNotificationsEnabled
+        MainForm.GlobalSettings.ToggleAudibleAlert()
+        'If My.Settings.AudibleNotificationsEnabled Then
+        If MainForm.GlobalSettings.AudibleAlert Then
             SpeakerBox.Image = My.Resources.Speaker_On
         Else
             SpeakerBox.Image = My.Resources.Speaker_Off
         End If
-        PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.ding)
+        PlaySound(MainForm.GlobalSettings.AudibleAlert, My.Resources.ding)
     End Sub
 
     Public Shared Sub PlaySound(Optional ShouldIPlay As Boolean = True, Optional SoundToPlay As System.IO.Stream = Nothing)
-        If My.Settings.AudibleNotificationsEnabled Then
+        'If My.Settings.AudibleNotificationsEnabled Then
+        If MainForm.GlobalSettings.AudibleAlert Then
             My.Computer.Audio.Play(SoundToPlay, AudioPlayMode.Background)
         End If
     End Sub

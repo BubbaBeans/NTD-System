@@ -83,7 +83,7 @@ Public Class FormSettings
         '.VehCapFile = Trim(CStr(VCapName.Text))
         '.Save()
         'End With
-        With SplashScreen1.Settings
+        With MainForm.GlobalSettings
             .BaseLocation = Trim(CStr(BaseBox.Text))
             .CompletedLocation = Trim(CStr(CompBox.Text))
             '.DayIndex = BoolToString(DayArray)
@@ -107,34 +107,35 @@ Public Class FormSettings
 
     Private Sub F9_Key(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
         If e.KeyCode <> 120 Then Exit Sub
-        Const c As String = ","
-        Const v As String = "|"
-        Dim mess As String
-        Dim Sett As String
-        Dim Active As String = InputBox("On what date would you like the settings to become active?", "Active Date", Str(CDate(Now)))
-        Dim UpdateDefault As Boolean = (MsgBox("Make these settings the new default?", vbYesNo, "Default Settings") = vbYes)
-        mess = Active + c + vbNewLine + "0xC000,"
-        If UpdateDefault Then
-            mess += "T,"
-        Else mess += "F,"
-        End If
-        Sett = Trim(BaseBox.Text) + c + BoolToString(DayArray) + c + BoolToString(DifferentSurvey) + c
-        Sett += Trim(CompBox.Text) + c + Trim(CStr(nSurv.Value)) + c + Trim(SettingsFName.Text) + c
-        Sett += Trim(SurveyFName.Text) + c + Trim(RRFN.Text) + c + Trim(WDBatchName.Text) + c
-        Sett += Trim(WEBatchName.Text) + c + Trim(CreatedSurveys.Text) + c + Trim(TotalFileName.Text)
-        Sett += Trim(AMPeakPicker.Value.ToString) + c + Trim(AfternoonPicker.Value.ToString) + c + Trim(PMPicker.Value.ToString) + c + Trim(VCapName.Text)
-        If UpdateDefault Then
-            Dim NewMess As String
-            NewMess = Sett.Replace(c, v)
-            Sett += c + NewMess
-        End If
-        Sett = mess + Sett
-        SaveSettings(Sett)
+        MainForm.GlobalSettings.WriteSettings(True)
+        'Const c As String = ","
+        'Const v As String = "|"
+        'Dim mess As String
+        'Dim Sett As String
+        'Dim Active As String = InputBox("On what date would you like the settings to become active?", "Active Date", Str(CDate(Now)))
+        'Dim UpdateDefault As Boolean = (MsgBox("Make these settings the new default?", vbYesNo, "Default Settings") = vbYes)
+        'mess = Active + c + vbNewLine + "0xC000,"
+        'If UpdateDefault Then
+        ' mess += "T,"
+        ' Else mess += "F,"
+        ' End If
+        ' Sett = Trim(BaseBox.Text) + c + BoolToString(DayArray) + c + BoolToString(DifferentSurvey) + c
+        ' Sett += Trim(CompBox.Text) + c + Trim(CStr(nSurv.Value)) + c + Trim(SettingsFName.Text) + c
+        ' Sett += Trim(SurveyFName.Text) + c + Trim(RRFN.Text) + c + Trim(WDBatchName.Text) + c
+        ' Sett += Trim(WEBatchName.Text) + c + Trim(CreatedSurveys.Text) + c + Trim(TotalFileName.Text)
+        ' Sett += Trim(AMPeakPicker.Value.ToString) + c + Trim(AfternoonPicker.Value.ToString) + c + Trim(PMPicker.Value.ToString) + c + Trim(VCapName.Text)
+        ' If UpdateDefault Then
+        ' Dim NewMess As String
+        ' NewMess = Sett.Replace(c, v)
+        ' Sett += c + NewMess
+        ' End If
+        ' Sett = mess + Sett
+        ' SaveSettings(Sett)
     End Sub
 
     Private Sub LoadFromSettings()
-        'Dim DayArray(7) As CheckBox
-        'Dim DA As CheckBox
+        '   'Dim DayArray(7) As CheckBox
+        '  'Dim DA As CheckBox
         DayArray(1) = CheckSun
         DayArray(2) = CheckMon
         DayArray(3) = CheckTue
@@ -149,57 +150,61 @@ Public Class FormSettings
         DifferentSurvey(5) = DiffThu
         DifferentSurvey(6) = DiffFri
         DifferentSurvey(7) = DiffSat
-
-        For b As Integer = 1 To 7
-            If UCase(Mid(My.Settings.DayIndex, b, 1)) = "T" Then
-                DayArray(b).Checked = True
-            Else DayArray(b).Checked = False
-            End If
-            If UCase(Mid(My.Settings.DiffDay, b, 1)) = "T" Then
-                DifferentSurvey(b).Checked = True
-            Else DifferentSurvey(b).Checked = False
-            End If
-            '      DA = DayArray(b)
-            '       AddHandler DA.CheckStateChanged, AddressOf CheckBox_CheckedChanged
+        '
+        For index As Integer = 1 To 7
+            DayArray(index).Checked = MainForm.GlobalSettings.OperatesOnThisDay(index - 1)
+            DifferentSurvey(index).Checked = MainForm.GlobalSettings.DifferentSurveyDay(index - 1)
         Next
-        With My.Settings
-            nSurv.Value = CInt(.NumSurveys)
-            BaseBox.Text = CStr(.BaseLocation)
-            CompBox.Text = CStr(.CompletedLocation)
-            SurveyFName.Text = CStr(.SurveyFileName)
-            SettingsFName.Text = CStr(.SettingsFileName)
-            RRFN.Text = CStr(.RouteRunFileName)
-            WDBatchName.Text = CStr(.WeekdayBatchFileName)
-            WEBatchName.Text = CStr(.WeekendBatchFileName)
-            CreatedSurveys.Text = CStr(.CreatedLocation)
-            TotalFileName.Text = CStr(.TotalFile)
-            Dim Provider As New CultureInfo("en-US")
-            AMPeakPicker.Value = Convert.ToDateTime(.AMPeak)
-            AfternoonPicker.Value = Convert.ToDateTime(.Afternoon)
-            PMPicker.Value = Convert.ToDateTime(.PMPeak)
-            VCapName.Text = CStr(.VehCapFile)
-        End With
+        'For b As Integer = 1 To 7
+        '    If UCase(Mid(My.Settings.DayIndex, b, 1)) = "T" Then
+        'DayArray(b).Checked = True
+        'Else DayArray(b).Checked = False
+        '    End If
+        'If UCase(Mid(My.Settings.DiffDay, b, 1)) = "T" Then
+        'DifferentSurvey(b).Checked = True
+        'Else DifferentSurvey(b).Checked = False
+        '    End If
+        ''      DA = DayArray(b)
+        ''       AddHandler DA.CheckStateChanged, AddressOf CheckBox_CheckedChanged
+        'Next
+        '    With My.Settings
+        'nSurv.Value = CInt(.NumSurveys)
+        'BaseBox.Text = CStr(.BaseLocation)
+        'CompBox.Text = CStr(.CompletedLocation)
+        'SurveyFName.Text = CStr(.SurveyFileName)
+        'SettingsFName.Text = CStr(.SettingsFileName)
+        'RRFN.Text = CStr(.RouteRunFileName)
+        'WDBatchName.Text = CStr(.WeekdayBatchFileName)
+        'WEBatchName.Text = CStr(.WeekendBatchFileName)
+        'CreatedSurveys.Text = CStr(.CreatedLocation)
+        'TotalFileName.Text = CStr(.TotalFile)
+        'Dim Provider As New CultureInfo("en-US")
+        '       AMPeakPicker.Value = Convert.ToDateTime(.AMPeak)
+        'AfternoonPicker.Value = Convert.ToDateTime(.Afternoon)
+        'PMPicker.Value = Convert.ToDateTime(.PMPeak)
+        'VCapName.Text = CStr(.VehCapFile)
+        'End With
     End Sub
 
     Private Sub RevertButt_Click(sender As Object, e As EventArgs) Handles RevertButt.Click
         SplitAndSet(My.Settings.Defaults)
-        My.Settings.Save()
-        LoadFromSettings()
+        'My.Settings.Save()
+        'LoadFromSettings()
     End Sub
 
     Private Sub RRFNButt_Click(sender As Object, e As EventArgs) Handles RRFNButt.Click
         RRFN.Text = DirectoryOrFile(RRFN.Text, True)
     End Sub
 
-    Private Sub Settings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        AMPeakPicker.Format = DateTimePickerFormat.Custom
-        AMPeakPicker.CustomFormat = "hh:mm"
-        AfternoonPicker.Format = DateTimePickerFormat.Custom
-        AfternoonPicker.CustomFormat = "hh:mm"
-        PMPicker.Format = DateTimePickerFormat.Custom
-        PMPicker.CustomFormat = "hh:mm"
-        LoadFromSettings()
-    End Sub
+    'Private Sub Settings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    '   AMPeakPicker.Format = DateTimePickerFormat.Custom
+    '   AMPeakPicker.CustomFormat = "hh:mm"
+    '   AfternoonPicker.Format = DateTimePickerFormat.Custom
+    '   AfternoonPicker.CustomFormat = "hh:mm"
+    '   PMPicker.Format = DateTimePickerFormat.Custom
+    '   PMPicker.CustomFormat = "hh:mm"
+    '   LoadFromSettings()
+    'End Sub
     Private Sub SettingsChange_Click(sender As Object, e As EventArgs) Handles SettingsChange.Click
         SettingsFName.Text = DirectoryOrFile(SettingsFName.Text, True)
     End Sub

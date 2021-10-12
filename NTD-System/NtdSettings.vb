@@ -2,8 +2,8 @@
     ' Taking the place of the built-in settings so it is easier to update settings externally.
     Private _SetDat As DateTime = Convert.ToDateTime("01/04/1070 12:01:00AM")
     Private _DomName As String = "RABA" 'Domain Name
-    Private _OperatingDays() As Boolean = {False, True, True, True, True, True, True} 'Indicates whether the system operates on that day
-    Private _DifferentSurvey() As Boolean = {False, False, False, False, False, False, True} 'Indicates whether the day operates under a different schedule
+    Private _OperatingDays() As Boolean = {True, True, True, True, True, True, False} 'Indicates whether the system operates on that day
+    Private _DifferentSurvey() As Boolean = {False, False, False, False, False, True, False} 'Indicates whether the day operates under a different schedule
     Private _Base As String = "N:\" 'Network or mapped drive location.  Base folder for the NTD storage
     Private _Comp As String = "\Completed" 'Location of storage of entered surveys, based on _Base
     Private _EntryMasterLoc As String = "\SurveyEntryMasters" 'Location of the csv master files for entering route surveys

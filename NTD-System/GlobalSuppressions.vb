@@ -20,3 +20,7 @@ Imports System.Diagnostics.CodeAnalysis
 <Assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification:="<Pending>", Scope:="member", Target:="~F:NTD_System.SurveyEntry.TOfDay")>
 <Assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification:="<Pending>", Scope:="member", Target:="~F:NTD_System.SurveyEntry.TotalWorkbook")>
 <Assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification:="<Pending>", Scope:="member", Target:="~M:NTD_System.Entry.CSVtoDataSource(System.String,System.Windows.Forms.DataGridView@,NTD_System.EnteredSurvey@)~System.Boolean")>
+<Assembly: SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification:="<Pending>", Scope:="member", Target:="~F:NTD_System.BatchForm.Result")>
+<Assembly: SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification:="<Pending>", Scope:="member", Target:="~M:NTD_System.BatchForm.Mess(System.String)")>
+<Assembly: SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification:="<Pending>", Scope:="member", Target:="~M:NTD_System.Comm.SaveSurveys(System.Collections.Generic.List{NTD_System.Survey})")>
+<Assembly: SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification:="<Pending>", Scope:="member", Target:="~M:NTD_System.SurveyEntry.TimeOfDay(System.String,System.Int32)~System.String[]")>

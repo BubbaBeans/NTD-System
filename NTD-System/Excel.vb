@@ -24,8 +24,8 @@ Module ExcelFunctions
         MainForm.Status(clear:=True)
         For Each s As Survey In svey
             MainForm.Status("Printing Survey " & CStr(counter) & ": " & s.DateTime.ToShortDateString & "  " & s.Serial)
-            Dim book As Workbook = app.Workbooks.Open(My.Settings.BaseLocation & My.Settings.SurveyFileName)
-
+            'Dim book As Workbook = app.Workbooks.Open(My.Settings.BaseLocation & My.Settings.SurveyFileName)
+            Dim book As Workbook = app.Workbooks.Open(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.NameOfSurveyFile)
             Dim sheet As Worksheet = book.Sheets(s.SheetName)
 
             sheet.Name = counter.ToString & "--"
