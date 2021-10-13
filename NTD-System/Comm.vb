@@ -2,8 +2,9 @@
 Imports System.Deployment.Application
 Imports Nager.Date
 Module Comm
+    Public PathDelimiter As String = "\"
     Friend Function CheckConnection() As Boolean
-        CheckConnection = File.Exists(My.Settings.BaseLocation & My.Settings.SurveyFileName)
+        Return File.Exists(My.Settings.BaseLocation & My.Settings.SurveyFileName)
     End Function
     ' Friend Sub UpdateSettings(Optional fyle As String = ".")
     ' '  Settings can be updated by placing a settings file on the server
@@ -111,7 +112,7 @@ Module Comm
             Try
                 info = AD.CheckForDetailedUpdate()
             Catch dde As DeploymentDownloadException
-                MessageBox.Show("The new version of the application cannot be downloaded at this time. " + ControlChars.Lf & ControlChars.Lf & "Please check your network connection, or try again later. Error: " + dde.Message)
+                MessageBox.Show("The new version of the application cannot be downloaded at this time. " & ControlChars.Lf & ControlChars.Lf & "Please check your network connection, or try again later. Error: " & dde.Message)
                 Return
             Catch ioe As InvalidOperationException
                 MessageBox.Show("This application cannot be updated. It is likely not a ClickOnce application. Error: " & ioe.Message)
@@ -123,7 +124,7 @@ Module Comm
 
                 If (Not info.IsUpdateRequired) Then
                     Dim dr As DialogResult = MessageBox.Show("An update is available. Would you like to update the application now?", "Update Available", MessageBoxButtons.OKCancel)
-                    If (Not System.Windows.Forms.DialogResult.OK = dr) Then
+                    If (System.Windows.Forms.DialogResult.OK <> dr) Then
                         doUpdate = False
                     End If
                 Else
@@ -149,11 +150,12 @@ Module Comm
         End If
     End Sub
     Friend Sub ReadSurveyInfo(ByRef Wday As List(Of Route), ByRef Sday As List(Of Route))
+        Dim PathDelimiter As String = "\"
         'Using sr As New StreamReader(My.Settings.BaseLocation & My.Settings.RouteRunFileName)
-        Using sr As New StreamReader(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.NameOfRouteRunFile)
+        Using sr As New StreamReader(MainForm.GlobalSettings.BaseLocation & PathDelimiter & MainForm.GlobalSettings.NameOfRouteRunFile)
             MainForm.Status("", False)
             Do Until sr.EndOfStream
-                Dim line() As String = sr.ReadLine().Split(","c)
+                Dim line As String() = sr.ReadLine().Split(","c)
                 ' a letter "S" at the end of the Serial number denotes a Saturday route.
                 ' However, the letter "S" could be used elsewhere in the SN.  Therefore Saturday surveys
                 ' use double-tilde "~~" in the Route_Run.csv to denote Saturday surveys.
@@ -201,19 +203,17 @@ Module Comm
             sw.Title = "Save Settings File As"
             'sw.FileName = My.Settings.SettingsFileName
             sw.FileName = MainForm.GlobalSettings.NameOfSettingsFile
-            If sw.ShowDialog = Windows.Forms.DialogResult.OK Then
-                If Not String.IsNullOrEmpty(sw.FileName) Then
-                    My.Computer.FileSystem.WriteAllText(sw.FileName, settings, False)
-                End If
+            If sw.ShowDialog = Windows.Forms.DialogResult.OK AndAlso Not String.IsNullOrEmpty(sw.FileName) Then
+                My.Computer.FileSystem.WriteAllText(sw.FileName, settings, False)
             End If
         End Using
     End Sub
     Public Function ReadVehicleFile() As List(Of String())
         Dim Info As New List(Of String())
         'Using sr As New StreamReader(My.Settings.BaseLocation & "\" & My.Settings.VehCapFile)
-        Using sr As New StreamReader(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.VehicleCapacityFile)
+        Using sr As New StreamReader(MainForm.GlobalSettings.BaseLocation & PathDelimiter & MainForm.GlobalSettings.VehicleCapacityFile)
             Do Until sr.EndOfStream
-                Dim Line() As String = sr.ReadLine().Split(","c)
+                Dim Line As String() = sr.ReadLine().Split(","c)
                 Info.Add(Line)
             Loop
         End Using
@@ -222,15 +222,16 @@ Module Comm
     Public Function HolidaysBetween(StartDate As Date, StopDate As Date, ByRef InfoBox As RichTextBox) As List(Of Date)
         Dim Holidates As New List(Of Date)
         Dim CurrentHolidays = DateSystem.GetPublicHoliday(StartDate, StopDate, CountryCode.US)
-        Dim NonRunningHolidays() As String = {"New Year's Day", "Memorial Day", "Independence Day", "Labour Day", "Veterans Day", "Thanksgiving Day", "Christmas Day"}
+        Dim NonRunningHolidays As String() = {"New Year's Day", "Memorial Day", "Independence Day", "Labour Day", "Veterans Day", "Thanksgiving Day", "Christmas Day"}
+        Dim TextBoxMessage As New System.Text.StringBuilder
+        TextBoxMessage.Append(InfoBox.Text)
         For Each h In CurrentHolidays
-            If Array.IndexOf(NonRunningHolidays, h.Name) >= 0 Then
-                If Not Holidates.Contains(h.Date) Then
-                    Holidates.Add(h.Date)
-                    InfoBox.Text += h.LocalName + " is on " + h.Date.ToLongDateString + vbCrLf
-                End If
+            If Array.IndexOf(NonRunningHolidays, h.Name) >= 0 AndAlso Not Holidates.Contains(h.Date) Then
+                Holidates.Add(h.Date)
+                TextBoxMessage.Append(h.LocalName & " is on " & h.Date.ToLongDateString & vbCrLf)
             End If
         Next
+        InfoBox.Text = TextBoxMessage.ToString()
         Return Holidates
     End Function
 End Module

@@ -29,16 +29,16 @@ Public Class MainForm
             loopDate = loopDate.AddDays(1)
         End While
 
-        BoldDates = dtarray.ToArray
+        Return dtarray.ToArray
     End Function
     Private Shared Function FirstDayofMonth(d As Date) As Date
         '  Quick and dirty way to calculate the first day of any given month.
-        FirstDayofMonth = New Date(d.Year, d.Month, 1)
+        Return New Date(d.Year, d.Month, 1)
     End Function
     Private Shared Function LastDayofMonth(d As Date) As Date
         '  Quick and dirty way to calculate the last day of any given month.
         Dim nd As Date = d.AddMonths(1)
-        LastDayofMonth = New Date(nd.Year, nd.Month, 1).AddDays(-1)
+        Return New Date(nd.Year, nd.Month, 1).AddDays(-1)
     End Function
 
     Private Sub SetupCalendar(calName As MonthCalendar, sDate As Date, months As Integer)
@@ -69,11 +69,12 @@ Public Class MainForm
     End Sub
     Private Sub StartDatePicker_ValueChanged(sender As Object, e As EventArgs) Handles StartDatePicker.ValueChanged
         'Keep from chosing a date earlier than today
-        If CDate(StartDatePicker.Value) < CDate(Now) Then Exit Sub
-        'ChosenDate is set to the first Monday after the date picked
-        Dim ChosenDate As Date = FirstMonday(StartDatePicker.Value)
-        If StartDatePicker.Value <> ChosenDate Then StartDatePicker.Value = ChosenDate
-        UpdateCalendars(CDate(ChosenDate), CInt(ctrlnWeeks.Value))
+        If CDate(StartDatePicker.Value) >= CDate(Now) Then
+            'ChosenDate is set to the first Monday after the date picked
+            Dim ChosenDate As Date = FirstMonday(StartDatePicker.Value)
+            If StartDatePicker.Value <> ChosenDate Then StartDatePicker.Value = ChosenDate
+            UpdateCalendars(CDate(ChosenDate), CInt(ctrlnWeeks.Value))
+        End If
     End Sub
     Private Sub UpdateCalendars(SDate As Date, NWeeks As Integer)
         '  Handles all of the updates to a calendar, including adding or removing
@@ -92,9 +93,9 @@ Public Class MainForm
     End Sub
     Private Function FirstMonday(sDate As Date) As Date
         If sDate.DayOfWeek = DayOfWeek.Monday Then
-            FirstMonday = sDate
+            Return sDate
         Else
-            FirstMonday = CDate(sDate.AddDays(If(sDate.DayOfWeek = DayOfWeek.Monday, 7, (7 - sDate.DayOfWeek + 1) Mod 7)))
+            Return CDate(sDate.AddDays(If(sDate.DayOfWeek = DayOfWeek.Monday, 7, (7 - sDate.DayOfWeek + 1) Mod 7)))
         End If
     End Function
     Private Sub MonthCalendar1_DateSelected(sender As Object, e As DateRangeEventArgs) Handles MonthCalendar1.DateSelected
@@ -126,7 +127,7 @@ Public Class MainForm
         Dim Run As String = ""
         Dim SurveySerial As String = ""
         Dim Surveys As New List(Of Survey)
-        Dim SCount As Integer = 0
+        'Dim SCount As Integer = 0
         Dim IsRepeat As Boolean = False
 
         Status("Running " & CStr(SurveysPerWeek) & " surveys for " & CStr(Weeks) & " weeks", False)
@@ -177,7 +178,7 @@ DunDunDun:
             Dim Stuff(1) As String
             Stuff(0) = CDate(StartDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture) & " 9:00:00 AM").AddDays(Weeks * 7 - 5).ToString()
             Stuff(1) = CDate(Stuff(0)).AddHours(1).ToString
-            If WriteCalendar(LoadInfo(Stuff)) = True Then
+            If WriteCalendar(LoadInfo(Stuff)) Then
                 MsgBox("Reminder file is on your desktop." & vbCrLf & "Double-click the file to add it to your calendar", vbOKOnly)
             Else
                 MsgBox("There was a problem creating the reminder.", vbOKOnly)
@@ -199,7 +200,7 @@ DunDunDun:
             Works = StartDate.AddDays(Rand(r, 0, 6))
         Loop Until Not MonthCalendar1.BoldedDates.Contains(Works.Date)
 
-        UsableDate = Works
+        Return Works
     End Function
     Private Function UsableRoute(Dayt As Date) As Route
         Dim isSaturday As Boolean = (Dayt.DayOfWeek = DayOfWeek.Saturday)
@@ -215,18 +216,18 @@ DunDunDun:
         End If
         '   Serial = RandomSerial.Name & "-" & CStr(Rand(r, 1, RandomSerial.Runs))
         '  UsableSerial = Serial
-        UsableRoute = RandomSerial
+        Return RandomSerial
         'End Function
     End Function
 
     Shared Function Bolded(cal As MonthCalendar) As String()
         Dim c As Integer = 0
-        Dim d() As String = Array.Empty(Of String)()
+        Dim d As String() = Array.Empty(Of String)()
         For Each b As Date In cal.BoldedDates
             d(c) = b.ToShortDateString
             c += 1
         Next
-        Bolded = d
+        Return d
     End Function
     Shared Function Rand(random As Random, Optional lowest As Integer = 0, Optional highest As Integer = 100) As Integer
         Dim randomNumber As Integer = random.Next(lowest, highest + 1)
@@ -235,7 +236,7 @@ DunDunDun:
 
     Shared Function RepeatSurvey(SV As List(Of Survey), Ser As String, SDat As Date) As Boolean
         Dim s As New Survey(Ser, SDat)
-        RepeatSurvey = SV.Contains(s)
+        Return SV.Contains(s)
     End Function
     Function ChooseASerial(SurvNums As List(Of Route)) As Route
         ' This short function returns a random route
@@ -248,7 +249,7 @@ redo:
         Catch ex As Exception
             GoTo redo
         End Try
-        ChooseASerial = srl
+        Return srl
     End Function
     Friend Sub Status(Optional msg As String = "", Optional after As Boolean = True, Optional clear As Boolean = False)
         ' This sub simply handles the status line (more like box) with a couple options for adding

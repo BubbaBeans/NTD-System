@@ -57,6 +57,6 @@ Public NotInheritable Class SplashScreen1
         Me.Close()
     End Sub
     Shared Function IsACreator() As Boolean
-        Return ((System.Environment.UserDomainName = "RABA") And (My.User.IsInRole("NTD_Creator")))
+        Return ((System.Environment.UserDomainName = "RABA") AndAlso (My.User.IsInRole("NTD_Creator")))
     End Function
 End Class

@@ -78,7 +78,7 @@ Public Class Survey
         'Route = Me.DateOfSurvey.ToString & " " & Me.Serial
         'Route1 = other.DateOfSurvey.ToString & " " & other.Serial
         'Return (Route = Route1)
-        Return (DateOfSurvey = other.DateOfSurvey) And (Serial = other.Serial)
+        Return (DateOfSurvey = other.DateOfSurvey) AndAlso (Serial = other.Serial)
     End Function
 
     Public Overrides Function Equals(obj As Object) As Boolean

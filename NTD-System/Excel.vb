@@ -14,10 +14,10 @@ Module ExcelFunctions
             .DisplayAlerts = False
         }
 
-        Dim modifier As Integer = 0
+        'Dim modifier As Integer = 0
         'Dim book As Workbook = app.Workbooks.Open(My.Settings.BaseLocation & My.Settings.SurveyFileName)
         Dim printbook As Workbook = app.Workbooks.Add()
-        Dim FNames As New List(Of String)
+        'Dim FNames As New List(Of String)
 
         Dim DtCell, TmCell As Range
         Dim counter As Integer = 1
@@ -89,7 +89,7 @@ ouvre:
     ''Dim dName As String = "C:\temp\" & rightnow & ".xps"
     ''  book.ExportAsFixedFormat(XlFixedFormatType.xlTypeXPS, dName, XlFixedFormatQuality.xlQualityStandard)
     ''
-    ''ToXPS = dName ' + ".xps"
+    ''ToXPS = dName ' & ".xps"
     ''End Function
 
     ''Private Function SheetName(book_to_check As Workbook, checkname As String, number As Integer) As String

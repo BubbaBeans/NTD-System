@@ -1,12 +1,12 @@
 ﻿'Imports System.Linq
-'Imports System.ComponentModel
+Imports System.ComponentModel
 Imports unvell.ReoGrid
 Imports System.Runtime.InteropServices
 
 Public Class SurveyEntry
     ' =========================================================================================================================================
     ' This whole section is added in order to speed up DataGridView, which is notoriously slow when it isn't databound.
-    ' It allows the redrawing of the view to be disabled before updating, then enable after it has been updating, keeping it from redrawing multiple times
+    ' It allows the redrawing of the view to be disabled before updating, then enable after it has finished updating, keeping it from redrawing multiple times
     <DllImport("user32.dll")>
     Private Shared Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Boolean, ByVal lParam As IntPtr) As Integer
     End Function
@@ -44,11 +44,12 @@ Public Class SurveyEntry
     Private PreviouslySelectedRow As Integer = 0
     Private nonNumberEntered As Boolean = False
     Private WarningSounded As Boolean = True
+    Private PathDelimiter As String = "\"
     'Dim PrevValue As New DataGridViewRow
     Private Sub SurveyEntry_Load(sender As Object, e As EventArgs) Handles Me.Load
         VehicleInfo = ReadVehicleFile()
         Dim AutoCompleteCollection As New AutoCompleteStringCollection
-        For Each Vehicle() As String In VehicleInfo
+        For Each Vehicle As String() In VehicleInfo
             VehComboBox.Items.Add(Vehicle(0))
             AutoCompleteCollection.Add(Vehicle(0))
         Next
@@ -56,7 +57,7 @@ Public Class SurveyEntry
         VehComboBox.AutoCompleteCustomSource = AutoCompleteCollection
         'VehComboBox.BackColor = SystemColors.Window
         'TotalWorkbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
-        TotalWorkbook.Load(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.SurveyTotalFile, IO.FileFormat.Excel2007)
+        TotalWorkbook.Load(MainForm.GlobalSettings.BaseLocation & PathDelimiter & MainForm.GlobalSettings.SurveyTotalFile, IO.FileFormat.Excel2007)
         With SurveyView
             .Columns("StopNo").ReadOnly = True
             .Columns("StopName").ReadOnly = True
@@ -71,11 +72,10 @@ Public Class SurveyEntry
             SpeakerBox.Image = My.Resources.Speaker_Off
         End If
     End Sub
-
     Private Sub SurveyEntry_Show(sender As Object, e As EventArgs) Handles Me.Shown
         ' The GUI doesn't allow the datagridview double-buffering to be enabled, so the next three lines enable it
         Dim dgvType As Type = SurveyView.GetType()
-        Dim propertyInfo As Reflection.PropertyInfo = dgvType.GetProperty("DoubleBuffered", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
+        Dim propertyInfo As Reflection.PropertyInfo = dgvType.GetProperty("DoubleBuffered", bindingAttr:=Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
         propertyInfo.SetValue(SurveyView, True, Nothing)
         ' And now there should be double-buffering, which will help speed the repainting of the control, especially when scrolling.
         DateTimePicker1.Value = Now()
@@ -184,7 +184,7 @@ Public Class SurveyEntry
             CurrentOff = CellVal(dgrid, PDBoard, Index)
             POnTotal += CurrentOn
             POffTotal += CurrentOff
-            If ((CurrentOn > 0) Or (CurrentOff > 0)) Then
+            If ((CurrentOn > 0) OrElse (CurrentOff > 0)) Then
                 Update_POB(dgrid, Index)
                 'Update_POB(dgrid, LastRow)
                 Update_DBStops(dgrid, Index)
@@ -250,7 +250,7 @@ Public Class SurveyEntry
     End Sub
 
     Private Sub SurveyView_KeyDown(sender As Object, e As KeyEventArgs) Handles SurveyView.KeyDown
-        Dim AllowedKeys() As Keys = {Keys.Back, Keys.Delete, Keys.Left, Keys.Right, Keys.Home, Keys.End,
+        Dim AllowedKeys As Keys() = {Keys.Back, Keys.Delete, Keys.Left, Keys.Right, Keys.Home, Keys.End,
                                      Keys.Up, Keys.Down, Keys.Left, Keys.Right, Keys.Tab, Keys.Enter,
                                      Keys.D0, Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9,
                                      Keys.NumPad0, Keys.NumPad1, Keys.NumPad2, Keys.NumPad3, Keys.NumPad4, Keys.NumPad5,
@@ -281,10 +281,10 @@ Public Class SurveyEntry
         ' Returns the row index of the last entered data.  Used to calculate passengers on board and passenger miles between stops
         Dim Index As Integer = CurrentRow - 1
         Dim Rtn As Integer = 0
-        While (Index >= 0)
+        While (Index >= 0) OrElse (Rtn = 0)
             If CellVal(dgrid, PBoard, Index) <> 0 Or CellVal(dgrid, PDBoard, Index) <> 0 Then
                 Rtn = Index
-                Exit While
+                'Exit While
             End If
             Index -= 1
         End While
@@ -334,11 +334,13 @@ Public Class SurveyEntry
         'Dim Sheet As Worksheet = TotalWorkbook.CurrentWorksheet
         With TotalWorkbook.CurrentWorksheet
             'With Sheet
-            'Dim BottomLine As Integer = CInt(.Cells("X2").Data)
-            Dim BottomLine As Integer = LastLine()
-            Dim SerialSplit() As String = RouteRunSplit(SV.TripSerial)
+            ''Dim BottomLine As Integer = CInt(.Cells("X2").Data)
+            Dim BottomLine As Integer = CInt(.CreateAndGetCell("X2").Data)
+            MsgBox(BottomLine.ToString(), vbOKOnly)
+            'Dim BottomLine As Integer = LastLine()
+            Dim SerialSplit As String() = RouteRunSplit(SV.TripSerial)
             If SerialSplit(0) = "2E" Then SerialSplit(0) = "2East"
-            Dim SerialFix = SerialSplit(0) + "-" + SerialSplit(1)
+            Dim SerialFix = SerialSplit(0) & "-" & SerialSplit(1)
             .Cells("A" & BottomLine.ToString()).Data = SerialFix.ToString()
             .Cells("B" & BottomLine.ToString()).Data = SV.SurveyDate.ToString()
             .Cells("C" & BottomLine.ToString()).Data = SV.DayOfWeek.ToString()
@@ -355,7 +357,7 @@ Public Class SurveyEntry
             .Cells("X2").Data = BottomLine + 1
         End With
         'TotalWorkbook.Save(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
-        TotalWorkbook.Save(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.SurveyTotalFile, IO.FileFormat.Excel2007)
+        TotalWorkbook.Save(MainForm.GlobalSettings.BaseLocation & PathDelimiter & MainForm.GlobalSettings.SurveyTotalFile, IO.FileFormat.Excel2007)
         'Sheet = Nothing
         'TotalWorkbook = Nothing
         'PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.ding)
@@ -379,9 +381,9 @@ Public Class SurveyEntry
 
     End Sub
     Private Function TimeOfDay(Serial As String, DayOfWeek As Integer) As String()
-        Dim RRun() As String = RouteRunSplit(Serial)
+        Dim RRun As String() = RouteRunSplit(Serial)
         Dim SurveysToCheck As List(Of Route)
-        If ((DayOfWeek = 7) Or (Strings.Right(RRun(0), 1) = "S")) Then
+        If ((DayOfWeek = 7) OrElse (Strings.Right(RRun(0), 1) = "S")) Then
             SurveysToCheck = SplashScreen1.SDSurvNums
         Else
             SurveysToCheck = SplashScreen1.WDSurvNums
@@ -390,7 +392,7 @@ Public Class SurveyEntry
         Try
             TOD = RunTimes(RRun(0), SurveysToCheck)(CInt(RRun(1) - 1))
         Catch
-            Return New String() {"Error", "Error"}
+            Return {"Error", "Error"}
         End Try
         Dim TimePeriod As String = "Afternoon"
         'If DateTime.Parse(TOD) >= DateTime.Parse(My.Settings.PMPeak) Then
@@ -402,7 +404,7 @@ Public Class SurveyEntry
         End If
         WorkingSurvey.TimePeriod = TimePeriod
         WorkingSurvey.TripSerial = Serial
-        Return New String() {TimePeriod, TOD}
+        Return {TimePeriod, TOD}
     End Function
 
     Private Shared Function RunTimes(RName As String, Surveys As List(Of Route)) As List(Of String)
@@ -417,7 +419,7 @@ Public Class SurveyEntry
     End Function
 
     Private Shared Function RouteRunSplit(Serial As String) As String()
-        RouteRunSplit = Trim(Serial).Split("-")
+        Return Trim(Serial).Split("-")
     End Function
 
     Private Sub FillInTODAndDOW()
@@ -426,7 +428,7 @@ Public Class SurveyEntry
         'Dim IsSaturday As Boolean = False
         DOWeek = DateAndTime.Weekday(CDate(SurveyDate))
         DayOfWeekLabel.Text = "Day Of Week: " & DateAndTime.WeekdayName(DOWeek)
-        Dim TOfDInfo() As String = TimeOfDay(SurveySerial, DOWeek)
+        Dim TOfDInfo As String() = TimeOfDay(SurveySerial, DOWeek)
         If TOfDInfo(0) = "Error" Then
             'MsgBox("The Serial Number is invald.  Please correct.", vbCritical)
             'SerialTextBox.Clear()
@@ -436,7 +438,8 @@ Public Class SurveyEntry
             ImportButt.Enabled = False
             Exit Sub
         End If
-        'MsgBox("Date: " + Trim(DateTimePicker1.Value.ToString()) + "   Time: " + Trim(SerialTextBox.Text), vbOKOnly)
+
+        'MsgBox("Date: " & Trim(DateTimePicker1.Value.ToString()) & "   Time: " & Trim(SerialTextBox.Text), vbOKOnly)
         If PreviouslyEntered(Trim(SurveyDate.ToString("MM/dd/yyyy")), Trim(SurveySerial)) Then
             MsgBox("This survey has been entered already.", vbCritical)
             SerialTextBox.Clear()
@@ -502,7 +505,7 @@ Public Class SurveyEntry
                 Exit Sub
             End If
         End If
-        FileName = "R" + FileName + ".csv"
+        FileName = "R" & FileName & ".csv"
         StartEntry(FileName)
     End Sub
 
@@ -575,11 +578,11 @@ Public Class SurveyEntry
         'TotalWorkbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
         Dim Sheet As Worksheet = TotalWorkbook.CurrentWorksheet
         Dim BottomLine As Integer = LastLine() - 1
-        While ((BottomLine > 2) And (Not IsFound))
-            'If IsDBNull(Sheet.GetCell("A" + BottomLine.ToString())) Then Return False
+        While ((BottomLine > 2) AndAlso (Not IsFound))
+            'If IsDBNull(Sheet.GetCell("A" & BottomLine.ToString())) Then Return False
             Dim Trip As String = Sheet.GetCellData("A" & BottomLine.ToString()).ToString()
             Dim SDate As String = Sheet.GetCellData("B" & BottomLine.ToString()).ToString()
-            IsFound = ((Trim(dayt) = Trim(SDate)) And (Trim(Serial) = Trim(Trip))) ' Checks whether this serial number has been entered for this date already, indicating a duplicate
+            IsFound = ((Trim(dayt) = Trim(SDate)) AndAlso (Trim(Serial) = Trim(Trip))) ' Checks whether this serial number has been entered for this date already, indicating a duplicate
             BottomLine -= 1
         End While
         Sheet = Nothing
@@ -589,14 +592,16 @@ Public Class SurveyEntry
     Private Function LastLine() As Integer
         ' Although there is a built-in way to find the last entered line on a spreadsheet, this one is consistently correct.
         ' The built-in method finds the last line accessed, rather than the last line with any data.
-        'Dim Last As Integer = 1
-        'Dim Wsheet As Worksheet = TotalWorkbook.Worksheets("Sheet1")
-        'While Not IsDBNull(Wsheet.CreateAndGetCell("A" + Last.ToString())) And Wsheet.GetCellData("A" + Last.ToString()) <> ""
-        'MsgBox(Last.ToString(), vbOKOnly)
-        'Last += 1
-        'End While
-        'Last = Wsheet.MaxContentRow + 1
-        Return TotalWorkbook.Worksheets("Sheet1").MaxContentRow + 1
+        ''Dim Last As Integer = 1
+        ''Dim Wsheet As Worksheet = TotalWorkbook.Worksheets("Sheet1")
+        ''While Not IsDBNull(Wsheet.CreateAndGetCell("A" & Last.ToString())) And Wsheet.GetCellData("A" & Last.ToString()) <> ""
+        ''        Last += 1
+        ''If Last / 20 = 0 Then MsgBox(Last.ToString, vbOKOnly)
+        ''        End While
+        ''Last = Wsheet.MaxContentRow + 1
+        ''Return Last
+        'Return TotalWorkbook.Worksheets("Sheet1").MaxContentRow + 1
+        Return TotalWorkbook.Worksheets("Sheet1").CreateAndGetCell("X2").Data
     End Function
 
     Private Sub CapTimer_Tick(sender As Object, e As EventArgs) Handles CapTimer.Tick
@@ -658,10 +663,10 @@ Public Class SurveyEntry
     End Sub
 
     Public Sub SurveyView_KeyPress(sender As Object, e As KeyPressEventArgs) Handles SurveyView.KeyPress
-        If Not Char.IsControl(e.KeyChar) And Not Char.IsDigit(e.KeyChar) Then
+        If Not Char.IsControl(e.KeyChar) AndAlso Not Char.IsDigit(e.KeyChar) Then
             nonNumberEntered = True
         End If
-        If nonNumberEntered = True Then
+        If nonNumberEntered Then
             e.Handled = True
             nonNumberEntered = False
         End If
