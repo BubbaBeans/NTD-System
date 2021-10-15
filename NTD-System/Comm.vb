@@ -225,10 +225,10 @@ Module Comm
         Dim NonRunningHolidays As String() = {"New Year's Day", "Memorial Day", "Independence Day", "Labour Day", "Veterans Day", "Thanksgiving Day", "Christmas Day"}
         Dim TextBoxMessage As New System.Text.StringBuilder
         TextBoxMessage.Append(InfoBox.Text)
-        For Each h In CurrentHolidays
-            If Array.IndexOf(NonRunningHolidays, h.Name) >= 0 AndAlso Not Holidates.Contains(h.Date) Then
-                Holidates.Add(h.Date)
-                TextBoxMessage.Append(h.LocalName & " is on " & h.Date.ToLongDateString & vbCrLf)
+        For Each holiday In CurrentHolidays
+            If Array.IndexOf(NonRunningHolidays, holiday.Name) >= 0 AndAlso Not Holidates.Contains(holiday.Date) Then
+                Holidates.Add(holiday.Date)
+                TextBoxMessage.Append(holiday.LocalName & " is on " & holiday.Date.ToLongDateString & vbCrLf)
             End If
         Next
         InfoBox.Text = TextBoxMessage.ToString()
