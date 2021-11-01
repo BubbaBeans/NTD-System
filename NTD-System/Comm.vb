@@ -176,7 +176,7 @@ Module Comm
     Friend Sub SaveSurveys(ByVal Srvys As List(Of Survey))
         Dim serializer As New XmlSerializer(GetType(List(Of Survey)))
         'Dim FyleName As String = My.Settings.CreatedLocation & "\" & Format(Now, "mmddyyyy") & ".srv"
-        Dim FyleName As String = MainForm.GlobalSettings.CreatedSurveyLocation & "\" & Format(Now, "mmddyyyy") & ".srv"
+        Dim FyleName As String = MainForm.GlobalSettings.BaseLocation & MainForm.GlobalSettings.CreatedSurveyLocation & "\" & Format(Now, "mmddyyyy") & ".srv"
         If Not System.IO.File.Exists(FyleName) Then
             System.IO.File.Create(FyleName).Dispose()
         End If
