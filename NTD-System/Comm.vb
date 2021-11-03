@@ -176,7 +176,7 @@ Module Comm
     Friend Sub SaveSurveys(ByVal Srvys As List(Of Survey))
         Dim serializer As New XmlSerializer(GetType(List(Of Survey)))
         'Dim FyleName As String = My.Settings.CreatedLocation & "\" & Format(Now, "mmddyyyy") & ".srv"
-        Dim FyleName As String = MainForm.GlobalSettings.BaseLocation & MainForm.GlobalSettings.CreatedSurveyLocation & "\" & Format(Now, "mmddyyyy") & ".srv"
+        Dim FyleName As String = MainForm.GlobalSettings.CreatedSurveyLocation & "\" & Format(Now, "mmddyyyy") & ".srv"
         If Not System.IO.File.Exists(FyleName) Then
             System.IO.File.Create(FyleName).Dispose()
         End If
@@ -221,7 +221,7 @@ Module Comm
     End Function
     Public Function HolidaysBetween(StartDate As Date, StopDate As Date, ByRef InfoBox As RichTextBox) As List(Of Date)
         Dim Holidates As New List(Of Date)
-        Dim CurrentHolidays = DateSystem.GetPublicHoliday(StartDate, StopDate, CountryCode.US)
+        Dim CurrentHolidays = DateSystem.GetPublicHolidays(StartDate, StopDate, CountryCode.US)
         Dim NonRunningHolidays As String() = {"New Year's Day", "Memorial Day", "Independence Day", "Labour Day", "Veterans Day", "Thanksgiving Day", "Christmas Day"}
         Dim TextBoxMessage As New System.Text.StringBuilder
         TextBoxMessage.Append(InfoBox.Text)
@@ -231,6 +231,7 @@ Module Comm
                 TextBoxMessage.Append(holiday.LocalName & " is on " & holiday.Date.ToLongDateString & vbCrLf)
             End If
         Next
+        TextBoxMessage.Append(vbCrLf & "!BOLD!Double-check all holidays to make sure they are on the correct day.")
         InfoBox.Text = TextBoxMessage.ToString()
         Return Holidates
     End Function

@@ -12,6 +12,8 @@ Public Class MainForm
         Status(clear:=True)
         Randomize()
         Me.Show()
+        AddHandler StatusText.TextChanged, AddressOf StatusText_TextChanged
+        UpdateCalendars(SDate, ctrlnWeeks.Value)
     End Sub
     Private Function BoldDates(ByVal dt As Date, ed As Date) As Date()
         '  Returns an array of dates that are bolded on the calendar
@@ -175,10 +177,8 @@ Err:
         MsgBox(Err.Description, MsgBoxStyle.Critical)
 DunDunDun:
         If MsgBox("Would you like a reminder to print the next set?", vbYesNo) = MsgBoxResult.Yes Then
-            Dim Stuff(1) As String
-            Stuff(0) = CDate(StartDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture) & " 9:00:00 AM").AddDays(Weeks * 7 - 5).ToString()
-            Stuff(1) = CDate(Stuff(0)).AddHours(1).ToString
-            If WriteCalendar(LoadInfo(Stuff)) Then
+            Dim ReminderDate As String = CDate(StartDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture) & " 9:00:00 AM").AddDays(Weeks * 7 - 5).ToString()
+            If WriteCalendar(ICS.CreateReminder(ReminderDate)) Then
                 MsgBox("Reminder file is on your desktop." & vbCrLf & "Double-click the file to add it to your calendar", vbOKOnly)
             Else
                 MsgBox("There was a problem creating the reminder.", vbOKOnly)
@@ -280,15 +280,7 @@ redo:
     Private Sub AboutButt_Click(sender As Object, e As EventArgs) Handles AboutButt.Click
         AboutForm.Show()
     End Sub
-    Private Function LoadInfo(Info() As String) As String
-        Dim LongInfo As String
-        Dim N As Char = vbCrLf
-        LongInfo = "BEGIN:VCALENDAR" & N & "VERSION:2.0" & N & "BEGIN:VEVENT" & N
-        LongInfo += "DTSTART:" & CDate(Info(0)).ToUniversalTime & N & "DTEND:" & CDate(Info(1)).ToUniversalTime & N
-        LongInfo += "SUMMARY:Print Surveys starting Monday" & N & "UID:" & System.Guid.NewGuid.ToString() & N
-        LongInfo += "CLASS:PUBLIC" & N & "END:VEVENT" & N & "END:VCALENDAR"
-        Return LongInfo
-    End Function
+
     Private Function WriteCalendar(Info As String) As Boolean
         Dim Outcome As Boolean = True
         Try
@@ -300,4 +292,17 @@ redo:
         End Try
         Return Outcome
     End Function
+
+    Private Sub StatusText_TextChanged(sender As Object, e As EventArgs) ' Handles StatusText.TextChanged
+        RemoveHandler StatusText.TextChanged, AddressOf StatusText_TextChanged
+        Array.ForEach(Enumerable.Range(0, StatusText.Lines.Length).Where(Function(x) StatusText.Lines(x).StartsWith("!BOLD!")).ToArray, Sub(x)
+                                                                                                                                            StatusText.SelectionStart = StatusText.GetFirstCharIndexFromLine(x)
+                                                                                                                                            StatusText.SelectionLength = 6
+                                                                                                                                            StatusText.SelectedText = String.Empty
+                                                                                                                                            'StatusText.SelectionStart -= 6
+                                                                                                                                            StatusText.SelectionLength = StatusText.Lines(x).Length
+                                                                                                                                            StatusText.SelectionFont = New Font(StatusText.SelectionFont, FontStyle.Bold)
+                                                                                                                                        End Sub)
+        AddHandler StatusText.TextChanged, AddressOf StatusText_TextChanged
+    End Sub
 End Class
