@@ -117,9 +117,8 @@ Partial Class MainForm
         Me.ThruDate.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ThruDate.Location = New System.Drawing.Point(269, 61)
         Me.ThruDate.Name = "ThruDate"
-        Me.ThruDate.Size = New System.Drawing.Size(57, 20)
+        Me.ThruDate.Size = New System.Drawing.Size(0, 20)
         Me.ThruDate.TabIndex = 10
-        Me.ThruDate.Text = "Label4"
         '
         'MonthCalendar1
         '
@@ -161,10 +160,10 @@ Partial Class MainForm
         Me.StatusText.BackColor = System.Drawing.SystemColors.AppWorkspace
         Me.StatusText.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.StatusText.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.StatusText.Location = New System.Drawing.Point(120, 352)
+        Me.StatusText.Location = New System.Drawing.Point(93, 352)
         Me.StatusText.Name = "StatusText"
-        Me.StatusText.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None
-        Me.StatusText.Size = New System.Drawing.Size(481, 83)
+        Me.StatusText.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical
+        Me.StatusText.Size = New System.Drawing.Size(508, 83)
         Me.StatusText.TabIndex = 14
         Me.StatusText.TabStop = False
         Me.StatusText.Text = ""

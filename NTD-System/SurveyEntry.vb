@@ -1,12 +1,13 @@
 ﻿'Imports System.Linq
-'Imports System.ComponentModel
+Imports System.ComponentModel
 Imports unvell.ReoGrid
+Imports System.Collections
 Imports System.Runtime.InteropServices
 
 Public Class SurveyEntry
     ' =========================================================================================================================================
     ' This whole section is added in order to speed up DataGridView, which is notoriously slow when it isn't databound.
-    ' It allows the redrawing of the view to be disabled before updating, then enable after it has been updating, keeping it from redrawing multiple times
+    ' It allows the redrawing of the view to be disabled before updating, then enable after it has finished updating, keeping it from redrawing multiple times
     <DllImport("user32.dll")>
     Private Shared Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Boolean, ByVal lParam As IntPtr) As Integer
     End Function
@@ -44,11 +45,12 @@ Public Class SurveyEntry
     Private PreviouslySelectedRow As Integer = 0
     Private nonNumberEntered As Boolean = False
     Private WarningSounded As Boolean = True
+    Private PathDelimiter As String = "\"
     'Dim PrevValue As New DataGridViewRow
     Private Sub SurveyEntry_Load(sender As Object, e As EventArgs) Handles Me.Load
         VehicleInfo = ReadVehicleFile()
         Dim AutoCompleteCollection As New AutoCompleteStringCollection
-        For Each Vehicle() As String In VehicleInfo
+        For Each Vehicle As String() In VehicleInfo
             VehComboBox.Items.Add(Vehicle(0))
             AutoCompleteCollection.Add(Vehicle(0))
         Next
@@ -56,7 +58,7 @@ Public Class SurveyEntry
         VehComboBox.AutoCompleteCustomSource = AutoCompleteCollection
         'VehComboBox.BackColor = SystemColors.Window
         'TotalWorkbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
-        TotalWorkbook.Load(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.SurveyTotalFile, IO.FileFormat.Excel2007)
+        TotalWorkbook.Load(MainForm.GlobalSettings.BaseLocation & PathDelimiter & MainForm.GlobalSettings.SurveyTotalFile, IO.FileFormat.Excel2007)
         With SurveyView
             .Columns("StopNo").ReadOnly = True
             .Columns("StopName").ReadOnly = True
@@ -71,11 +73,10 @@ Public Class SurveyEntry
             SpeakerBox.Image = My.Resources.Speaker_Off
         End If
     End Sub
-
     Private Sub SurveyEntry_Show(sender As Object, e As EventArgs) Handles Me.Shown
         ' The GUI doesn't allow the datagridview double-buffering to be enabled, so the next three lines enable it
         Dim dgvType As Type = SurveyView.GetType()
-        Dim propertyInfo As Reflection.PropertyInfo = dgvType.GetProperty("DoubleBuffered", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
+        Dim propertyInfo As Reflection.PropertyInfo = dgvType.GetProperty("DoubleBuffered", bindingAttr:=Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
         propertyInfo.SetValue(SurveyView, True, Nothing)
         ' And now there should be double-buffering, which will help speed the repainting of the control, especially when scrolling.
         DateTimePicker1.Value = Now()
@@ -128,28 +129,28 @@ Public Class SurveyEntry
     End Sub
 
     Protected Friend Sub SurveyView_CellValueChanged(Optional sender As Object = Nothing, Optional e As DataGridViewCellEventArgs = Nothing) ' Handles SurveyView.CellValueChanged
-        Dim ItIs As Object = CellVal(SurveyView, e.ColumnIndex, e.RowIndex)
+        Dim ItIs As Object = CellVal(SurveyView, e.ColumnIndex, e.RowIndex, "SurveyView_CellValueChanged")
         If Not IsNumeric(ItIs) Then
-            SurveyView.Rows(e.RowIndex).Cells(e.ColumnIndex).Value = 0
-        End If
-        Dim currentvalue As Int64 = CellVal(SurveyView, e.ColumnIndex, e.RowIndex)
+                SurveyView.Rows(e.RowIndex).Cells(e.ColumnIndex).Value = 0
+            End If
+        Dim currentvalue As Int64 = CellVal(SurveyView, e.ColumnIndex, e.RowIndex, "SurveyView_CellValueChanged: currentvalue")
         'Dim cellCollection() As DataGridViewCell = New DataGridViewCell(2) {}
         With SurveyView
 
-            If currentvalue < 0 Then
-                .Rows(e.RowIndex).Cells(e.ColumnIndex).Style.ForeColor = Color.Red
-                WorkingCell.Style.ForeColor = Color.Red
-                .Rows(SurveyView.CurrentCell.RowIndex).Cells(SurveyView.CurrentCell.ColumnIndex).Style.ForeColor = Color.Red
-                .CurrentCell.Style.ForeColor = Color.Red
-                SurveyView.Tag += 1
-            Else
-                .Rows(e.RowIndex).Cells(e.ColumnIndex).Style.ForeColor = Color.Black
-                '.CurrentCell.Style.ForeColor = Color.Black
-                .Rows(SurveyView.CurrentCell.RowIndex).Cells(SurveyView.CurrentCell.ColumnIndex).Style.ForeColor = Color.Black
-                WorkingCell.Style.ForeColor = Color.Black
-                SurveyView.Tag -= 1
-            End If
-        End With
+                If currentvalue < 0 Then
+                    .Rows(e.RowIndex).Cells(e.ColumnIndex).Style.ForeColor = Color.Red
+                    WorkingCell.Style.ForeColor = Color.Red
+                    .Rows(SurveyView.CurrentCell.RowIndex).Cells(SurveyView.CurrentCell.ColumnIndex).Style.ForeColor = Color.Red
+                    .CurrentCell.Style.ForeColor = Color.Red
+                    SurveyView.Tag += 1
+                Else
+                    .Rows(e.RowIndex).Cells(e.ColumnIndex).Style.ForeColor = Color.Black
+                    '.CurrentCell.Style.ForeColor = Color.Black
+                    .Rows(SurveyView.CurrentCell.RowIndex).Cells(SurveyView.CurrentCell.ColumnIndex).Style.ForeColor = Color.Black
+                    WorkingCell.Style.ForeColor = Color.Black
+                    SurveyView.Tag -= 1
+                End If
+            End With
 
         If Not CurrentlyUpdating Then
             CurrentlyUpdating = True
@@ -179,12 +180,11 @@ Public Class SurveyEntry
         'Dim Index As Integer = 0
         'While Index < LastRow
         For Index As Integer = 0 To LastRow - 1
-
-            CurrentOn = CellVal(dgrid, PBoard, Index)
-            CurrentOff = CellVal(dgrid, PDBoard, Index)
+            CurrentOn = CellVal(dgrid, PBoard, Index, "UpdateTotals: CurrentOn")
+            CurrentOff = CellVal(dgrid, PDBoard, Index, "UpdateTotals: CurrentOff")
             POnTotal += CurrentOn
             POffTotal += CurrentOff
-            If ((CurrentOn > 0) Or (CurrentOff > 0)) Then
+            If ((CurrentOn > 0) OrElse (CurrentOff > 0)) Then
                 Update_POB(dgrid, Index)
                 'Update_POB(dgrid, LastRow)
                 Update_DBStops(dgrid, Index)
@@ -210,7 +210,7 @@ Public Class SurveyEntry
         Dim POnBrd As Integer
         Dim Index As Integer = 0
         While Index < ChangedRow
-            POnBrd += CellVal(dgrid, PBoard, Index) - CellVal(dgrid, PDBoard, Index)
+            POnBrd += CellVal(dgrid, PBoard, Index, "Update_POB: POnBrd Getting PBoard") - CellVal(dgrid, PDBoard, Index, "Update_POB: POnBrd Getting PDBoard")
             Index += 1
         End While
         If POnBrd <> 0 Then
@@ -223,34 +223,54 @@ Public Class SurveyEntry
 
     Public Shared Sub Update_DBStops(ByRef dgrid As DataGridView, ChangedRow As Integer)
         SuspendDrawing(dgrid)
-        If ChangedRow <> 0 Then
-            Dim PrevRow As Integer = FindPrevious(dgrid, ChangedRow)
-            Dim DB As Double = Convert.ToDouble(CellVal(dgrid, Odo, ChangedRow) - CellVal(dgrid, Odo, PrevRow))
-            If DB <> 0 Then
-                dgrid.Rows(ChangedRow).Cells(DBS).Value = Format(DB, "##.##")
-            Else
-                dgrid.Rows(ChangedRow).Cells(DBS).Value = DBNull.Value
+        Dim PrevRow As Integer = 0
+        Try
+            If ChangedRow > 0 Then
+                PrevRow = FindPrevious(dgrid, ChangedRow)
+                Dim DB As Double = Convert.ToDouble(CellVal(dgrid, Odo, ChangedRow, "Update_DBStops: DB Getting Odo at ChangedRow") - CellVal(dgrid, Odo, PrevRow, "Update_DBStops: DB getting Odo at PrevRow"))
+                If DB > 0 Then
+                    dgrid.Rows(ChangedRow).Cells(DBS).Value = Format(DB, "##.##")
+                Else
+                    dgrid.Rows(ChangedRow).Cells(DBS).Value = DBNull.Value
+                End If
             End If
-        End If
+        Catch
+            Dim Lines As String() = {"", "", "", ""}
+            Lines(0) = "Error in Update_DBStops."
+            Lines(1) = "ChangedRow: " & ChangedRow.ToString()
+            Lines(2) = "Odo: " & Odo.ToString()
+            Lines(3) = "PrevRow: " & PrevRow.ToString()
+            ErrorBox(Lines)
+        End Try
         ResumeDrawing(dgrid)
     End Sub
 
     Public Shared Sub Update_PMiles(ByRef dgrid As DataGridView, ChangedRow As Integer)
         SuspendDrawing(dgrid)
-        If ChangedRow <> 0 Then
-            'Dim PrevRow As Integer = FindPrevious(dgrid, ChangedRow)
-            Dim PMil As Double = Convert.ToDouble(CellVal(dgrid, DBS, ChangedRow) * CellVal(dgrid, POB, ChangedRow))
-            If PMil <> 0 Then
-                dgrid.Rows(ChangedRow).Cells(PM).Value = Format(PMil, "##.##")
-            Else
-                dgrid.Rows(ChangedRow).Cells(PM).Value = DBNull.Value
+        Try
+            If ChangedRow > 0 Then
+                'Dim PrevRow As Integer = FindPrevious(dgrid, ChangedRow)
+                Dim PMil As Double = Convert.ToDouble(CellVal(dgrid, DBS, ChangedRow, "Update_PMiles: PMil getting DBS at ChangedRow") * CellVal(dgrid, POB, ChangedRow, "Update_PMiles: PMil getting POB at ChangedRow"))
+                If PMil <> 0 Then
+                    dgrid.Rows(ChangedRow).Cells(PM).Value = Format(PMil, "##.##")
+                Else
+                    dgrid.Rows(ChangedRow).Cells(PM).Value = DBNull.Value
+                End If
             End If
-        End If
+        Catch
+            Dim Lines As String() = {"", "", "", "", ""}
+            Lines(0) = "Error in Update_PMiles."
+            Lines(1) = "ChangedRow: " & ChangedRow.ToString()
+            Lines(2) = "DBS: " & DBS.ToString()
+            Lines(3) = "POB: " & POB.ToString()
+            Lines(4) = "PM: " & PM.ToString()
+            ErrorBox(Lines)
+        End Try
         ResumeDrawing(dgrid)
     End Sub
 
     Private Sub SurveyView_KeyDown(sender As Object, e As KeyEventArgs) Handles SurveyView.KeyDown
-        Dim AllowedKeys() As Keys = {Keys.Back, Keys.Delete, Keys.Left, Keys.Right, Keys.Home, Keys.End,
+        Dim AllowedKeys As Keys() = {Keys.Back, Keys.Delete, Keys.Left, Keys.Right, Keys.Home, Keys.End,
                                      Keys.Up, Keys.Down, Keys.Left, Keys.Right, Keys.Tab, Keys.Enter,
                                      Keys.D0, Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9,
                                      Keys.NumPad0, Keys.NumPad1, Keys.NumPad2, Keys.NumPad3, Keys.NumPad4, Keys.NumPad5,
@@ -264,30 +284,60 @@ Public Class SurveyEntry
         End If
     End Sub
 
-    Private Shared Function CellVal(dgrid As DataGridView, column As Integer, Row As Integer) As Object
+    Private Shared Function CellVal(dgrid As DataGridView, column As Integer, Row As Integer, CallingSub As String) As Object
         ' Returns the value of the cell.  If the cell is empty, return zero
-        Dim value As Object
-        Dim Rtn As Object
-        value = dgrid.Rows(Row).Cells(column).Value
-        If value IsNot DBNull.Value Then
-            Rtn = value
-        Else
-            Rtn = 0
-        End If
+        Dim Rtn As Object = 0
+        Try
+            'If column < 0 OrElse Row < 0 Then
+            ' MsgBox("Row: " & Row.ToString() & "  Column: " & column.ToString(), vbOKOnly)
+            ' Stop
+            ' End If
+            Dim value As Object
+            '            Dim Rtn As Object
+            value = dgrid.Rows(Row).Cells(column).Value
+            If value IsNot DBNull.Value Then
+                Rtn = value
+            Else
+                Rtn = 0
+            End If
+        Catch
+            Dim Lines As String() = {"", "", "", ""}
+            Lines(0) = "Error in CellVal."
+            Lines(0) = "Calling Sub: " & CallingSub
+            Lines(2) = "Column: " & column.ToString()
+            Lines(3) = "Row: " & Row.ToString()
+            ErrorBox(Lines)
+        End Try
+
         Return Rtn
     End Function
 
     Public Shared Function FindPrevious(dgrid As DataGridView, CurrentRow As Integer) As Integer
         ' Returns the row index of the last entered data.  Used to calculate passengers on board and passenger miles between stops
+        If CurrentRow <= 0 Then
+            Return 0
+        End If
         Dim Index As Integer = CurrentRow - 1
+        If Index <= 0 Then
+            Return 0
+        End If
         Dim Rtn As Integer = 0
-        While (Index >= 0)
-            If CellVal(dgrid, PBoard, Index) <> 0 Or CellVal(dgrid, PDBoard, Index) <> 0 Then
-                Rtn = Index
-                Exit While
-            End If
-            Index -= 1
-        End While
+        Try
+            While (Index >= 0)
+                If CellVal(dgrid, PBoard, Index, "FindPrevious getting PBoard at Index") <> 0 Or CellVal(dgrid, PDBoard, Index, "FindPrevious getting PDBoard at Index") <> 0 Then
+                    Rtn = Index
+                    Exit While
+                End If
+                Index -= 1
+            End While
+        Catch
+            Dim Lines As String() = {"", "", "", ""}
+            Lines(0) = "Error in FindPrevious."
+            Lines(1) = "CurrentRow: " & CurrentRow.ToString
+            Lines(2) = "PDBoard: " & PDBoard.ToString()
+            Lines(3) = "PBoard: " & PBoard.ToString()
+            ErrorBox(Lines)
+        End Try
         Return Rtn
     End Function
 
@@ -332,30 +382,40 @@ Public Class SurveyEntry
     Private Sub StoreOnFile(SV As EnteredSurvey) ', Workbook As ReoGridControl)
         'Workbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
         'Dim Sheet As Worksheet = TotalWorkbook.CurrentWorksheet
-        With TotalWorkbook.CurrentWorksheet
-            'With Sheet
-            'Dim BottomLine As Integer = CInt(.Cells("X2").Data)
-            Dim BottomLine As Integer = LastLine()
-            Dim SerialSplit() As String = RouteRunSplit(SV.TripSerial)
-            If SerialSplit(0) = "2E" Then SerialSplit(0) = "2East"
-            Dim SerialFix = SerialSplit(0) + "-" + SerialSplit(1)
-            .Cells("A" & BottomLine.ToString()).Data = SerialFix.ToString()
-            .Cells("B" & BottomLine.ToString()).Data = SV.SurveyDate.ToString()
-            .Cells("C" & BottomLine.ToString()).Data = SV.DayOfWeek.ToString()
-            .Cells("D" & BottomLine.ToString()).Data = SV.TimePeriod.ToString()
-            .Cells("E" & BottomLine.ToString()).Data = SV.Route.ToString()
-            .Cells("F" & BottomLine.ToString()).Data = SV.TotalCapacity
-            .Cells("G" & BottomLine.ToString()).Data = SV.SeatedCapacity
-            .Cells("H" & BottomLine.ToString()).Data = Convert.ToDouble(SV.CapacityMiles)
-            .Cells("I" & BottomLine.ToString()).Data = Convert.ToDouble(SV.SeatedMiles)
-            .Cells("J" & BottomLine.ToString()).Data = SV.PassengersBoarded
-            .Cells("K" & BottomLine.ToString()).Data = SV.PassengersOnBoard
-            .Cells("L" & BottomLine.ToString()).Data = Convert.ToDouble(SV.DistanceBetStops)
-            .Cells("M" & BottomLine.ToString()).Data = Convert.ToDouble(SV.PassengerMiles)
-            .Cells("X2").Data = BottomLine + 1
-        End With
+        '        With TotalWorkbook.CurrentWorksheet
+        '        'With Sheet
+        '        ''Dim BottomLine As Integer = CInt(.Cells("X2").Data)
+        Dim BottomLine As Integer = CInt(TotalWorkbook.CurrentWorksheet.CreateAndGetCell("X2").Data)
+        '        'MsgBox(BottomLine.ToString(), vbOKOnly)
+        '        'Dim BottomLine As Integer = LastLine()
+        Dim SerialSplit As String() = RouteRunSplit(SV.TripSerial)
+        If SerialSplit(0) = "2E" Then SerialSplit(0) = "2East"
+        Dim SerialFix = SerialSplit(0) & "-" & SerialSplit(1)
+        Dim sheet As Worksheet = TotalWorkbook.CurrentWorksheet
+        sheet.Resize(BottomLine, 25)
+        'MsgBox("BottomLine: " & BottomLine.ToString(), vbOKOnly)
+        sheet("A" & BottomLine.ToString() & ":E" & BottomLine.ToString()) = {SerialFix.ToString(), SV.SurveyDate.ToString(), SV.TimePeriod.ToString, SV.Route.ToString()}
+        sheet("F" & BottomLine.ToString() & ":G" & BottomLine.ToString()) = {SV.TotalCapacity, SV.SeatedCapacity}
+        sheet("H" & BottomLine.ToString() & ":I" & BottomLine.ToString()) = {Convert.ToDouble(SV.CapacityMiles), Convert.ToDouble(SV.SeatedMiles)}
+        sheet("J" & BottomLine.ToString() & ":K" & BottomLine.ToString()) = {SV.PassengersBoarded, SV.PassengersOnBoard}
+        sheet("L" & BottomLine.ToString() & ":M" & BottomLine.ToString()) = {Convert.ToDouble(SV.DistanceBetStops), Convert.ToDouble(SV.PassengerMiles)}
+        '        .Cells("A" & BottomLine.ToString()).Data = SerialFix.ToString()
+        '        .Cells("B" & BottomLine.ToString()).Data = SV.SurveyDate.ToString()
+        '        .Cells("C" & BottomLine.ToString()).Data = SV.DayOfWeek.ToString()
+        '        .Cells("D" & BottomLine.ToString()).Data = SV.TimePeriod.ToString()
+        '        .Cells("E" & BottomLine.ToString()).Data = SV.Route.ToString()
+        '        .Cells("F" & BottomLine.ToString()).Data = SV.TotalCapacity
+        '        .Cells("G" & BottomLine.ToString()).Data = SV.SeatedCapacity
+        '        .Cells("H" & BottomLine.ToString()).Data = Convert.ToDouble(SV.CapacityMiles)
+        '        .Cells("I" & BottomLine.ToString()).Data = Convert.ToDouble(SV.SeatedMiles)
+        '        .Cells("J" & BottomLine.ToString()).Data = SV.PassengersBoarded
+        '        .Cells("K" & BottomLine.ToString()).Data = SV.PassengersOnBoard
+        '        .Cells("L" & BottomLine.ToString()).Data = Convert.ToDouble(SV.DistanceBetStops)
+        '        .Cells("M" & BottomLine.ToString()).Data = Convert.ToDouble(SV.PassengerMiles)
+        sheet.Cells("X2").Data = BottomLine + 1
+        '       End With
         'TotalWorkbook.Save(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
-        TotalWorkbook.Save(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.SurveyTotalFile, IO.FileFormat.Excel2007)
+        TotalWorkbook.Save(MainForm.GlobalSettings.BaseLocation & PathDelimiter & MainForm.GlobalSettings.SurveyTotalFile, IO.FileFormat.Excel2007)
         'Sheet = Nothing
         'TotalWorkbook = Nothing
         'PlaySound(My.Settings.AudibleNotificationsEnabled, My.Resources.ding)
@@ -379,9 +439,9 @@ Public Class SurveyEntry
 
     End Sub
     Private Function TimeOfDay(Serial As String, DayOfWeek As Integer) As String()
-        Dim RRun() As String = RouteRunSplit(Serial)
+        Dim RRun As String() = RouteRunSplit(Serial)
         Dim SurveysToCheck As List(Of Route)
-        If ((DayOfWeek = 7) Or (Strings.Right(RRun(0), 1) = "S")) Then
+        If ((DayOfWeek = 7) OrElse (Strings.Right(RRun(0), 1) = "S")) Then
             SurveysToCheck = SplashScreen1.SDSurvNums
         Else
             SurveysToCheck = SplashScreen1.WDSurvNums
@@ -390,7 +450,7 @@ Public Class SurveyEntry
         Try
             TOD = RunTimes(RRun(0), SurveysToCheck)(CInt(RRun(1) - 1))
         Catch
-            Return New String() {"Error", "Error"}
+            Return {"Error", "Error"}
         End Try
         Dim TimePeriod As String = "Afternoon"
         'If DateTime.Parse(TOD) >= DateTime.Parse(My.Settings.PMPeak) Then
@@ -402,7 +462,7 @@ Public Class SurveyEntry
         End If
         WorkingSurvey.TimePeriod = TimePeriod
         WorkingSurvey.TripSerial = Serial
-        Return New String() {TimePeriod, TOD}
+        Return {TimePeriod, TOD}
     End Function
 
     Private Shared Function RunTimes(RName As String, Surveys As List(Of Route)) As List(Of String)
@@ -417,7 +477,7 @@ Public Class SurveyEntry
     End Function
 
     Private Shared Function RouteRunSplit(Serial As String) As String()
-        RouteRunSplit = Trim(Serial).Split("-")
+        Return Trim(Serial).Split("-")
     End Function
 
     Private Sub FillInTODAndDOW()
@@ -426,7 +486,7 @@ Public Class SurveyEntry
         'Dim IsSaturday As Boolean = False
         DOWeek = DateAndTime.Weekday(CDate(SurveyDate))
         DayOfWeekLabel.Text = "Day Of Week: " & DateAndTime.WeekdayName(DOWeek)
-        Dim TOfDInfo() As String = TimeOfDay(SurveySerial, DOWeek)
+        Dim TOfDInfo As String() = TimeOfDay(SurveySerial, DOWeek)
         If TOfDInfo(0) = "Error" Then
             'MsgBox("The Serial Number is invald.  Please correct.", vbCritical)
             'SerialTextBox.Clear()
@@ -436,7 +496,8 @@ Public Class SurveyEntry
             ImportButt.Enabled = False
             Exit Sub
         End If
-        'MsgBox("Date: " + Trim(DateTimePicker1.Value.ToString()) + "   Time: " + Trim(SerialTextBox.Text), vbOKOnly)
+
+        'MsgBox("Date: " & Trim(DateTimePicker1.Value.ToString()) & "   Time: " & Trim(SerialTextBox.Text), vbOKOnly)
         If PreviouslyEntered(Trim(SurveyDate.ToString("MM/dd/yyyy")), Trim(SurveySerial)) Then
             MsgBox("This survey has been entered already.", vbCritical)
             SerialTextBox.Clear()
@@ -502,7 +563,7 @@ Public Class SurveyEntry
                 Exit Sub
             End If
         End If
-        FileName = "R" + FileName + ".csv"
+        FileName = "R" & FileName & ".csv"
         StartEntry(FileName)
     End Sub
 
@@ -524,10 +585,10 @@ Public Class SurveyEntry
         Dim DistanceBetweenStops As Double = 0D
         Dim PassengerMiles As Double = 0D
         For row As Integer = 0 To LastRow
-            PassengersBoarded += CInt(CellVal(dgrid, PBoard, row))
-            PassengersOnBoard += CInt(CellVal(dgrid, POB, row))
-            DistanceBetweenStops += Convert.ToDouble(CellVal(dgrid, DBS, row))
-            PassengerMiles += Convert.ToDouble(CellVal(dgrid, PM, row))
+            PassengersBoarded += CInt(CellVal(dgrid, PBoard, row, "TotalItAll: PassengersBoarded getting PBoard at row"))
+            PassengersOnBoard += CInt(CellVal(dgrid, POB, row, "TotalItAll: PassengersOnBoard getting POB at row"))
+            DistanceBetweenStops += Convert.ToDouble(CellVal(dgrid, DBS, row, "TotalItAll: DistanceBetweenStops getting DBS at row"))
+            PassengerMiles += Convert.ToDouble(CellVal(dgrid, PM, row, "TotalItAll: PassengerMiles getting PM at row"))
         Next
         With WorkingSurvey
             .PassengersBoarded = PassengersBoarded
@@ -571,32 +632,35 @@ Public Class SurveyEntry
     'End Sub
 
     Private Function PreviouslyEntered(dayt As String, Serial As String) As Boolean
-        Dim IsFound As Boolean = False
-        'TotalWorkbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
-        Dim Sheet As Worksheet = TotalWorkbook.CurrentWorksheet
-        Dim BottomLine As Integer = LastLine() - 1
-        While ((BottomLine > 2) And (Not IsFound))
-            'If IsDBNull(Sheet.GetCell("A" + BottomLine.ToString())) Then Return False
-            Dim Trip As String = Sheet.GetCellData("A" & BottomLine.ToString()).ToString()
-            Dim SDate As String = Sheet.GetCellData("B" & BottomLine.ToString()).ToString()
-            IsFound = ((Trim(dayt) = Trim(SDate)) And (Trim(Serial) = Trim(Trip))) ' Checks whether this serial number has been entered for this date already, indicating a duplicate
-            BottomLine -= 1
-        End While
-        Sheet = Nothing
-        Return IsFound
+        '        Dim IsFound As Boolean = False
+        '        'TotalWorkbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
+        '        Dim Sheet As Worksheet = TotalWorkbook.CurrentWorksheet
+        '        Dim BottomLine As Integer = LastLine() - 1
+        '        While ((BottomLine > 2) AndAlso (Not IsFound))
+        '        'If IsDBNull(Sheet.GetCell("A" & BottomLine.ToString())) Then Return False
+        '        Dim Trip As String = Sheet.GetCellData("A" & BottomLine.ToString()).ToString()
+        '        Dim SDate As String = Sheet.GetCellData("B" & BottomLine.ToString()).ToString()
+        '        IsFound = ((Trim(dayt) = Trim(SDate)) AndAlso (Trim(Serial) = Trim(Trip))) ' Checks whether this serial number has been entered for this date already, indicating a duplicate
+        '        BottomLine -= 1
+        '        End While
+        '        Sheet = Nothing
+        '       Return IsFound
+        Return False
     End Function
 
     Private Function LastLine() As Integer
         ' Although there is a built-in way to find the last entered line on a spreadsheet, this one is consistently correct.
         ' The built-in method finds the last line accessed, rather than the last line with any data.
-        'Dim Last As Integer = 1
-        'Dim Wsheet As Worksheet = TotalWorkbook.Worksheets("Sheet1")
-        'While Not IsDBNull(Wsheet.CreateAndGetCell("A" + Last.ToString())) And Wsheet.GetCellData("A" + Last.ToString()) <> ""
-        'MsgBox(Last.ToString(), vbOKOnly)
-        'Last += 1
-        'End While
-        'Last = Wsheet.MaxContentRow + 1
-        Return TotalWorkbook.Worksheets("Sheet1").MaxContentRow + 1
+        ''Dim Last As Integer = 1
+        ''Dim Wsheet As Worksheet = TotalWorkbook.Worksheets("Sheet1")
+        ''While Not IsDBNull(Wsheet.CreateAndGetCell("A" & Last.ToString())) And Wsheet.GetCellData("A" & Last.ToString()) <> ""
+        ''        Last += 1
+        ''If Last / 20 = 0 Then MsgBox(Last.ToString, vbOKOnly)
+        ''        End While
+        ''Last = Wsheet.MaxContentRow + 1
+        ''Return Last
+        'Return TotalWorkbook.Worksheets("Sheet1").MaxContentRow + 1
+        Return TotalWorkbook.Worksheets("Sheet1").CreateAndGetCell("X2").Data
     End Function
 
     Private Sub CapTimer_Tick(sender As Object, e As EventArgs) Handles CapTimer.Tick
@@ -658,10 +722,10 @@ Public Class SurveyEntry
     End Sub
 
     Public Sub SurveyView_KeyPress(sender As Object, e As KeyPressEventArgs) Handles SurveyView.KeyPress
-        If Not Char.IsControl(e.KeyChar) And Not Char.IsDigit(e.KeyChar) Then
+        If Not Char.IsControl(e.KeyChar) AndAlso Not Char.IsDigit(e.KeyChar) Then
             nonNumberEntered = True
         End If
-        If nonNumberEntered = True Then
+        If nonNumberEntered Then
             e.Handled = True
             nonNumberEntered = False
         End If
@@ -698,4 +762,12 @@ Public Class SurveyEntry
             My.Computer.Audio.Play(SoundToPlay, AudioPlayMode.Background)
         End If
     End Sub
+    Public Shared Sub ErrorBox(Lines As String())
+        Dim Prompt As New System.Text.StringBuilder
+        For Each Line As String In Lines
+            Prompt.Append(Line + vbNewLine)
+        Next
+        MsgBox(Prompt.ToString(), vbOKOnly)
+    End Sub
+
 End Class

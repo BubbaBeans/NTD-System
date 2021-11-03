@@ -3,15 +3,15 @@ Public Class FormSettings
     ReadOnly DayArray(7) As CheckBox
     ReadOnly DifferentSurvey(7) As CheckBox
     Shared Function SwitchComma(inpt As String, Optional makecomma As Boolean = False) As String
-        Dim out As String = ""
+        Dim out As New System.Text.StringBuilder
         For Each c As String In inpt
-            If c <> "," And Not makecomma Then
-                out &= c
-            ElseIf c = "|" And makecomma Then
-                out &= ","
+            If c <> "," AndAlso Not makecomma Then
+                out.Append(c)
+            ElseIf c = "|" AndAlso makecomma Then
+                out.Append(",")
             End If
         Next
-        SwitchComma = out
+        Return out.ToString()
     End Function
 
     Private Sub BaseChange_Click(sender As Object, e As EventArgs) Handles BaseChange.Click
@@ -19,7 +19,7 @@ Public Class FormSettings
     End Sub
 
     Private Function BoolToString(arr As Array) As String
-        Dim Answer As String = ""
+        Dim Answer As New System.Text.StringBuilder
         Dim s As String
         For Each a As Boolean In arr
             If a Then
@@ -27,9 +27,9 @@ Public Class FormSettings
             Else
                 s = "F"
             End If
-            Answer += s
+            Answer.Append(s)
         Next
-        Return Trim(Answer)
+        Return Trim(Answer.ToString())
     End Function
 
     Private Sub CanButt_Click(sender As Object, e As EventArgs) Handles CanButt.Click
@@ -53,12 +53,12 @@ Public Class FormSettings
         If Not ReturnFile Then
             Dim Look As New FolderBrowserDialog
             If Look.ShowDialog() = DialogResult.OK Then
-                DirectoryOrFile = Look.SelectedPath
+                Return Look.SelectedPath
             End If
         Else
             Dim Look As New OpenFileDialog()
             If Look.ShowDialog() = DialogResult.OK Then
-                DirectoryOrFile = System.IO.Path.GetFileName(Look.FileName)
+                Return System.IO.Path.GetFileName(Look.FileName)
             End If
         End If
     End Function
@@ -106,54 +106,58 @@ Public Class FormSettings
     End Sub
 
     Private Sub F9_Key(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
-        If e.KeyCode <> 120 Then Exit Sub
-        MainForm.GlobalSettings.WriteSettings(True)
-        'Const c As String = ","
-        'Const v As String = "|"
-        'Dim mess As String
-        'Dim Sett As String
-        'Dim Active As String = InputBox("On what date would you like the settings to become active?", "Active Date", Str(CDate(Now)))
-        'Dim UpdateDefault As Boolean = (MsgBox("Make these settings the new default?", vbYesNo, "Default Settings") = vbYes)
-        'mess = Active + c + vbNewLine + "0xC000,"
-        'If UpdateDefault Then
-        ' mess += "T,"
-        ' Else mess += "F,"
-        ' End If
-        ' Sett = Trim(BaseBox.Text) + c + BoolToString(DayArray) + c + BoolToString(DifferentSurvey) + c
-        ' Sett += Trim(CompBox.Text) + c + Trim(CStr(nSurv.Value)) + c + Trim(SettingsFName.Text) + c
-        ' Sett += Trim(SurveyFName.Text) + c + Trim(RRFN.Text) + c + Trim(WDBatchName.Text) + c
-        ' Sett += Trim(WEBatchName.Text) + c + Trim(CreatedSurveys.Text) + c + Trim(TotalFileName.Text)
-        ' Sett += Trim(AMPeakPicker.Value.ToString) + c + Trim(AfternoonPicker.Value.ToString) + c + Trim(PMPicker.Value.ToString) + c + Trim(VCapName.Text)
-        ' If UpdateDefault Then
-        ' Dim NewMess As String
-        ' NewMess = Sett.Replace(c, v)
-        ' Sett += c + NewMess
-        ' End If
-        ' Sett = mess + Sett
-        ' SaveSettings(Sett)
+        If e.KeyCode = 120 Then
+            MainForm.GlobalSettings.WriteSettings(True)
+            'Const c As String = ","
+            'Const v As String = "|"
+            'Dim mess As String
+            'Dim Sett As String
+            'Dim Active As String = InputBox("On what date would you like the settings to become active?", "Active Date", Str(CDate(Now)))
+            'Dim UpdateDefault As Boolean = (MsgBox("Make these settings the new default?", vbYesNo, "Default Settings") = vbYes)
+            'mess = Active + c + vbNewLine & "0xC000,"
+            'If UpdateDefault Then
+            ' mess += "T,"
+            ' Else mess += "F,"
+            ' End If
+            ' Sett = Trim(BaseBox.Text) + c + BoolToString(DayArray) + c + BoolToString(DifferentSurvey) + c
+            ' Sett += Trim(CompBox.Text) + c + Trim(CStr(nSurv.Value)) + c + Trim(SettingsFName.Text) + c
+            ' Sett += Trim(SurveyFName.Text) + c + Trim(RRFN.Text) + c + Trim(WDBatchName.Text) + c
+            ' Sett += Trim(WEBatchName.Text) + c + Trim(CreatedSurveys.Text) + c + Trim(TotalFileName.Text)
+            ' Sett += Trim(AMPeakPicker.Value.ToString) + c + Trim(AfternoonPicker.Value.ToString) + c + Trim(PMPicker.Value.ToString) + c + Trim(VCapName.Text)
+            ' If UpdateDefault Then
+            ' Dim NewMess As String
+            ' NewMess = Sett.Replace(c, v)
+            ' Sett += c + NewMess
+            ' End If
+            ' Sett = mess + Sett
+            ' SaveSettings(Sett)
+        End If
     End Sub
 
     Private Sub LoadFromSettings()
         '   'Dim DayArray(7) As CheckBox
         '  'Dim DA As CheckBox
-        DayArray(1) = CheckSun
-        DayArray(2) = CheckMon
-        DayArray(3) = CheckTue
-        DayArray(4) = CheckWed
-        DayArray(5) = CheckTh
-        DayArray(6) = CheckFri
-        DayArray(7) = CheckSat
-        DifferentSurvey(1) = DiffSun
-        DifferentSurvey(2) = DiffMon
-        DifferentSurvey(3) = DiffTue
-        DifferentSurvey(4) = DiffWed
-        DifferentSurvey(5) = DiffThu
-        DifferentSurvey(6) = DiffFri
-        DifferentSurvey(7) = DiffSat
+        MsgBox("DayArray", vbOKOnly)
+        DayArray(0) = CheckSun
+        DayArray(1) = CheckMon
+        DayArray(2) = CheckTue
+        DayArray(3) = CheckWed
+        DayArray(4) = CheckTh
+        DayArray(5) = CheckFri
+        DayArray(6) = CheckSat
+        MsgBox("DifferentSurvey", vbOKOnly)
+        DifferentSurvey(0) = DiffSun
+        DifferentSurvey(1) = DiffMon
+        DifferentSurvey(2) = DiffTue
+        DifferentSurvey(3) = DiffWed
+        DifferentSurvey(4) = DiffThu
+        DifferentSurvey(5) = DiffFri
+        DifferentSurvey(6) = DiffSat
         '
-        For index As Integer = 1 To 7
-            DayArray(index).Checked = MainForm.GlobalSettings.OperatesOnThisDay(index - 1)
-            DifferentSurvey(index).Checked = MainForm.GlobalSettings.DifferentSurveyDay(index - 1)
+        MsgBox("Comparing vs settings", vbOKOnly)
+        For index As Integer = 0 To 6
+            DayArray(index).Checked = MainForm.GlobalSettings.OperatesOnThisDay(index)
+            DifferentSurvey(index).Checked = MainForm.GlobalSettings.DifferentSurveyDay(index)
         Next
         'For b As Integer = 1 To 7
         '    If UCase(Mid(My.Settings.DayIndex, b, 1)) = "T" Then
@@ -167,6 +171,23 @@ Public Class FormSettings
         ''      DA = DayArray(b)
         ''       AddHandler DA.CheckStateChanged, AddressOf CheckBox_CheckedChanged
         'Next
+        With MainForm.GlobalSettings
+            nSurv.Value = CInt(.SurveysPerWeek)
+            BaseBox.Text = CStr(.BaseLocation)
+            CompBox.Text = CStr(.CompletedLocation)
+            SurveyFName.Text = CStr(.NameOfSurveyFile)
+            SettingsFName.Text = CStr(.NameOfSettingsFile)
+            RRFN.Text = CStr(.NameOfRouteRunFile)
+            WDBatchName.Text = CStr(.WeekdayBatchFile)
+            WEBatchName.Text = CStr(.WeekendBatchFile)
+            CreatedSurveys.Text = CStr(.CreatedSurveyLocation)
+            TotalFileName.Text = CStr(.SurveyTotalFile)
+            'Dim Provider As New CultureInfo("en-us")
+            AMPeakPicker.Value = Convert.ToDateTime(.AMPeak)
+            AfternoonPicker.Value = Convert.ToDateTime(.Afternoon)
+            PMPicker.Value = Convert.ToDateTime(.PMPeak)
+            VCapName.Text = CStr(.VehicleCapacityFile)
+        End With
         '    With My.Settings
         'nSurv.Value = CInt(.NumSurveys)
         'BaseBox.Text = CStr(.BaseLocation)
@@ -210,7 +231,7 @@ Public Class FormSettings
     End Sub
 
     Private Sub SplitAndSet(sent As String, Optional dflt As Boolean = False)
-        Dim Stngs() As String = Split(sent, ",")
+        Dim Stngs As String() = Split(sent, ",")
         With My.Settings
             .DayIndex = Stngs(0)
             .DiffDay = Stngs(1)
@@ -255,5 +276,9 @@ Public Class FormSettings
 
     Private Sub VehCapBut_Click(sender As Object, e As EventArgs) Handles VehCapBut.Click
         VCapName.Text = DirectoryOrFile(VCapName.Text, True)
+    End Sub
+
+    Private Sub FormSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' Placeholder for future work
     End Sub
 End Class

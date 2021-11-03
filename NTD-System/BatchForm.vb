@@ -3,6 +3,7 @@ Public Class BatchForm
     Dim WeekdayBatch(12) As String
     Dim WeekendBatch(12) As String
     Public StatusSpacer As String = vbNewLine & "        "
+    Public PathDelimiter As String = "\"
     Dim Result As MsgBoxResult ' This allows for a messagebox to be used anywhere in the form, just a quick placeholder basically
     Private Sub BatchForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         EndingDateRadioButton.Checked = True
@@ -14,10 +15,10 @@ Public Class BatchForm
         SetupCalendar(MonthCalendar1, FirstDayofMonth(FirstMonday(Now)), 1)
         Status("Reading Weekday Batch File", False)
         'ReadBatchFile(My.Settings.BaseLocation & My.Settings.WeekdayBatchFileName, WeekdayBatch)
-        ReadBatchFile(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.WeekdayBatchFile, WeekdayBatch)
+        ReadBatchFile(MainForm.GlobalSettings.BaseLocation & PathDelimiter & MainForm.GlobalSettings.WeekdayBatchFile, WeekdayBatch)
         Status("Reading Weekend Batch File", False)
         'ReadBatchFile(My.Settings.BaseLocation & My.Settings.WeekendBatchFileName, WeekendBatch)
-        ReadBatchFile(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.WeekendBatchFile, WeekendBatch)
+        ReadBatchFile(MainForm.GlobalSettings.BaseLocation & PathDelimiter & MainForm.GlobalSettings.WeekendBatchFile, WeekendBatch)
         Status("Done Reading Files", False)
         Status(clear:=True)
     End Sub
@@ -40,16 +41,16 @@ Public Class BatchForm
             loopDate = loopDate.AddDays(1)
         End While
 
-        BoldDates = dtarray.ToArray
+        Return dtarray.ToArray
     End Function
     Private Shared Function FirstDayofMonth(d As Date) As Date
         '  Quick and dirty way to calculate the first day of any given month.
-        FirstDayofMonth = New Date(d.Year, d.Month, 1)
+        Return New Date(d.Year, d.Month, 1)
     End Function
     Private Shared Function LastDayofMonth(d As Date) As Date
         '  Quick and dirty way to calculate the last day of any given month.
         Dim nd As Date = d.AddMonths(1)
-        LastDayofMonth = New Date(nd.Year, nd.Month, 1).AddDays(-1)
+        Return New Date(nd.Year, nd.Month, 1).AddDays(-1)
     End Function
 
     Private Sub SetupCalendar(calName As MonthCalendar, sDate As Date, months As Integer)
@@ -92,9 +93,9 @@ Public Class BatchForm
     End Sub
     Private Function FirstMonday(sDate As Date) As Date
         If sDate.DayOfWeek = DayOfWeek.Monday Then
-            FirstMonday = sDate
+            Return sDate
         Else
-            FirstMonday = CDate(sDate.AddDays(If(sDate.DayOfWeek = DayOfWeek.Monday, 7, (7 - sDate.DayOfWeek + 1) Mod 7)))
+            Return CDate(sDate.AddDays(If(sDate.DayOfWeek = DayOfWeek.Monday, 7, (7 - sDate.DayOfWeek + 1) Mod 7)))
         End If
     End Function
     Private Sub MonthCalendar1_DateSelected(sender As Object, e As DateRangeEventArgs) Handles MonthCalendar1.DateSelected
@@ -173,7 +174,7 @@ Public Class BatchForm
                         Status(serial, True)
                         RunPart = SerialPart("RUN", serial)
                         RoutePart = SerialPart("ROUTE", serial)
-                        If ((RunPart = "#NA") Or (RoutePart = "#NA")) Then GoTo GoAheadAndJump
+                        If ((RunPart = "#NA") OrElse (RoutePart = "#NA")) Then GoTo GoAheadAndJump
                         If Strings.Left(RoutePart, 2) = "SE" Then
                             If Strings.Right(RoutePart, 1) = "2" Then
                                 Surveys.Add(New Survey(serial, CDate(CurrDate & " " & "15:20"), "SE2"))
@@ -237,7 +238,7 @@ OuttaHere:
                 Return item
             End If
         Next
-        Dim Temp As MsgBoxResult = MsgBox("Not Found: " & Rt.ToString, vbOKOnly)
+        MsgBox("Not Found: " & Rt.ToString, vbOKOnly)
         Return Nothing
     End Function
     Friend Function FindTime(route As Route, run As String) As String
