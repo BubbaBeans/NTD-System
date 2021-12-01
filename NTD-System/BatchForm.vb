@@ -134,6 +134,7 @@ Public Class BatchForm
         End If
     End Sub
     Private Sub RunBatchButton_Click(sender As Object, e As EventArgs) Handles RunBatchButton.Click
+        Cursor = Cursors.WaitCursor
         Dim StartDate As Date = CDate(StartDatePicker.Value.ToShortDateString)
         Dim EndDate As Date = CDate(EndDatePicker.Value.ToShortDateString)
         Dim RunPart As String = ""
@@ -204,6 +205,7 @@ GoAheadAndJump:
             End If
             CurrDate = CurrDate.AddDays(1)
         End While
+        Cursor = Cursors.Default
         Status("Done with all surveys!", False)
         ''BatchXPSPrinter.PrintXPS(True)
         MsgBox("All surveys sent to the printer.", MsgBoxStyle.Information, "Finish Printing")

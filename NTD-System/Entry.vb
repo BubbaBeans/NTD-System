@@ -2,8 +2,10 @@
 Module Entry
     Friend Function CSVtoDataSource(RouteFile As String, ByRef grid As DataGridView, ByRef SurveyThingy As EnteredSurvey) As Boolean
         Dim DidItWork As Boolean = True
+        Dim Location As String = MainForm.GlobalSettings.SurveyMastersLocation & "\" & RouteFile
         Try
-            Using SR As New StreamReader(MainForm.GlobalSettings.BaseLocation & "\" & MainForm.GlobalSettings.SurveyMastersLocation & "\" & RouteFile)
+
+            Using SR As New StreamReader(Location)
 
                 Dim line As String
                 Do Until SR.EndOfStream
@@ -18,8 +20,8 @@ Module Entry
                     End If
                 Loop
             End Using
-        Catch
-            MsgBox("Error importing the file into the data Grid", vbExclamation)
+        Catch ex As Exception
+            MsgBox("Error importing the file into the data Grid" + vbNewLine + ex.Message + vbNewLine + "File: " + Location, vbExclamation)
             DidItWork = False
         End Try
 

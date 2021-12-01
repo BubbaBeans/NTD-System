@@ -4,6 +4,7 @@ Public NotInheritable Class SplashScreen1
     Public SDSurvNums As New List(Of Route)
 
     Private Sub SplashScreen1_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        Comm.InstallUpdateSyncWithInfo()
         'Set up the dialog text at runtime according to the application's assembly information.  
         VersionLabel.Text = "Version: " & Application.ProductVersion
 

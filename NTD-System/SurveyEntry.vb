@@ -385,6 +385,7 @@ Public Class SurveyEntry
         '        With TotalWorkbook.CurrentWorksheet
         '        'With Sheet
         '        ''Dim BottomLine As Integer = CInt(.Cells("X2").Data)
+        Cursor = Cursors.WaitCursor
         Dim BottomLine As Integer = CInt(TotalWorkbook.CurrentWorksheet.CreateAndGetCell("X2").Data)
         '        'MsgBox(BottomLine.ToString(), vbOKOnly)
         '        'Dim BottomLine As Integer = LastLine()
@@ -423,6 +424,7 @@ Public Class SurveyEntry
         SavedLabel.ForeColor = Color.Red
         SavedLabel.Visible = True
         SavedLabelTimer.Enabled = True
+        Cursor = Cursors.Default
     End Sub
     Private Sub DateTimePicker1_Leave(sender As Object, e As EventArgs) Handles DateTimePicker1.Leave
         If DateTimePicker1.Value > Today() Then
@@ -532,6 +534,7 @@ Public Class SurveyEntry
 
     Private Sub SaveButton_Click(sender As Object, e As EventArgs) Handles SaveButton.Click
         SaveButton.Enabled = False
+        Cursor = Cursors.WaitCursor
         WorkingSurvey.TripSerial = Trim(SerialTextBox.Text)
         WorkingSurvey.TimePeriod = Trim(TOfDay)
         TotalItAll(SurveyView)
@@ -543,9 +546,11 @@ Public Class SurveyEntry
         ImportButt.Enabled = True
         TimeOfDayLabel.Text = "Time Of Day:"
         SerialTextBox.Select()
+        Cursor = Cursors.Default
     End Sub
 
     Private Sub ImportButt_Click(sender As Object, e As EventArgs) Handles ImportButt.Click
+        Cursor = Cursors.WaitCursor
         RemoveAllHandlers()
         ImportButt.BackColor = SystemColors.ControlDarkDark
         ImportButt.Enabled = False
@@ -560,11 +565,13 @@ Public Class SurveyEntry
             If DOWeek <> 7 Then
                 MsgBox("The Serial Number indicates a Saturday route" & vbNewLine & "but the date is not a Saturday." & vbNewLine & vbNewLine & "Please fix the error.", vbCritical)
                 SerialTextBox.Select()
+                Cursor = Cursors.Default
                 Exit Sub
             End If
         End If
         FileName = "R" & FileName & ".csv"
         StartEntry(FileName)
+        Cursor = Cursors.Default
     End Sub
 
     Private Sub VehComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles VehComboBox.SelectedIndexChanged

@@ -103,7 +103,7 @@ Module Comm
     ' End If
     ' End With
     ' End Sub
-    Private Sub InstallUpdateSyncWithInfo()
+    Public Sub InstallUpdateSyncWithInfo()
         Dim info As UpdateCheckInfo '= Nothing
 
         If (ApplicationDeployment.IsNetworkDeployed) Then
