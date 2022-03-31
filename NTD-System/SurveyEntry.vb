@@ -140,9 +140,10 @@ Public Class SurveyEntry
                 If currentvalue < 0 Then
                     .Rows(e.RowIndex).Cells(e.ColumnIndex).Style.ForeColor = Color.Red
                     WorkingCell.Style.ForeColor = Color.Red
-                    .Rows(SurveyView.CurrentCell.RowIndex).Cells(SurveyView.CurrentCell.ColumnIndex).Style.ForeColor = Color.Red
-                    .CurrentCell.Style.ForeColor = Color.Red
-                    SurveyView.Tag += 1
+                .Rows(SurveyView.CurrentCell.RowIndex).Cells(SurveyView.CurrentCell.ColumnIndex).Style.ForeColor = Color.Red
+                .CurrentCell.Style.ForeColor = Color.Red
+                PlaySound(SoundToPlay:=My.Resources.sound_wrong)
+                SurveyView.Tag += 1
                 Else
                     .Rows(e.RowIndex).Cells(e.ColumnIndex).Style.ForeColor = Color.Black
                     '.CurrentCell.Style.ForeColor = Color.Black
@@ -563,6 +564,7 @@ Public Class SurveyEntry
         If Strings.Right(FileName, 1) = "S" Then
             FileName = FileName.Remove(FileName.Length - 1, 1)
             If DOWeek <> 7 Then
+                PlaySound(SoundToPlay:=My.Resources.sound_wrong)
                 MsgBox("The Serial Number indicates a Saturday route" & vbNewLine & "but the date is not a Saturday." & vbNewLine & vbNewLine & "Please fix the error.", vbCritical)
                 SerialTextBox.Select()
                 Cursor = Cursors.Default
@@ -763,9 +765,8 @@ Public Class SurveyEntry
         PlaySound(MainForm.GlobalSettings.AudibleAlert, My.Resources.ding)
     End Sub
 
-    Public Shared Sub PlaySound(Optional ShouldIPlay As Boolean = True, Optional SoundToPlay As System.IO.Stream = Nothing)
-        'If My.Settings.AudibleNotificationsEnabled Then
-        If MainForm.GlobalSettings.AudibleAlert Then
+    Public Shared Sub PlaySound(Optional ShouldIPlay As Boolean = False, Optional SoundToPlay As System.IO.Stream = Nothing)
+        If (MainForm.GlobalSettings.AudibleAlert Or ShouldIPlay) Then
             My.Computer.Audio.Play(SoundToPlay, AudioPlayMode.Background)
         End If
     End Sub
@@ -774,6 +775,7 @@ Public Class SurveyEntry
         For Each Line As String In Lines
             Prompt.Append(Line + vbNewLine)
         Next
+        PlaySound(True, SoundToPlay:=My.Resources.sound_wrong)
         MsgBox(Prompt.ToString(), vbOKOnly)
     End Sub
 
