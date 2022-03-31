@@ -130,6 +130,7 @@ Public Class SurveyEntry
 
     Protected Friend Sub SurveyView_CellValueChanged(Optional sender As Object = Nothing, Optional e As DataGridViewCellEventArgs = Nothing) ' Handles SurveyView.CellValueChanged
         Dim ItIs As Object = CellVal(SurveyView, e.ColumnIndex, e.RowIndex, "SurveyView_CellValueChanged")
+
         If Not IsNumeric(ItIs) Then
                 SurveyView.Rows(e.RowIndex).Cells(e.ColumnIndex).Value = 0
             End If
@@ -139,17 +140,21 @@ Public Class SurveyEntry
 
                 If currentvalue < 0 Then
                     .Rows(e.RowIndex).Cells(e.ColumnIndex).Style.ForeColor = Color.Red
-                    WorkingCell.Style.ForeColor = Color.Red
+                WorkingCell.Style.ForeColor = Color.Red
+                'WorkingCell.Style.BackColor = Color.Salmon
                 .Rows(SurveyView.CurrentCell.RowIndex).Cells(SurveyView.CurrentCell.ColumnIndex).Style.ForeColor = Color.Red
                 .CurrentCell.Style.ForeColor = Color.Red
+                '.CurrentCell.Style.BackColor = Color.Salmon
                 PlaySound(SoundToPlay:=My.Resources.sound_wrong)
                 SurveyView.Tag += 1
                 Else
                     .Rows(e.RowIndex).Cells(e.ColumnIndex).Style.ForeColor = Color.Black
-                    '.CurrentCell.Style.ForeColor = Color.Black
-                    .Rows(SurveyView.CurrentCell.RowIndex).Cells(SurveyView.CurrentCell.ColumnIndex).Style.ForeColor = Color.Black
-                    WorkingCell.Style.ForeColor = Color.Black
-                    SurveyView.Tag -= 1
+                '.CurrentCell.Style.ForeColor = Color.Black
+
+                .Rows(SurveyView.CurrentCell.RowIndex).Cells(SurveyView.CurrentCell.ColumnIndex).Style.ForeColor = Color.Black
+                WorkingCell.Style.ForeColor = Color.Black
+
+                SurveyView.Tag -= 1
                 End If
             End With
 
