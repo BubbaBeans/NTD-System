@@ -45,9 +45,9 @@ Public Class SurveyEntry
     Private PreviouslySelectedRow As Integer = 0
     Private nonNumberEntered As Boolean = False
     Private WarningSounded As Boolean = True
-    Private PathDelimiter As String = "\"
-    'Dim PrevValue As New DataGridViewRow
-    Private Sub SurveyEntry_Load(sender As Object, e As EventArgs) Handles Me.Load
+	Private PathDelimiter As String = "\"
+	'Dim PrevValue As New DataGridViewRow
+	Private Sub SurveyEntry_Load(sender As Object, e As EventArgs) Handles Me.Load
         VehicleInfo = ReadVehicleFile()
         Dim AutoCompleteCollection As New AutoCompleteStringCollection
         For Each Vehicle As String() In VehicleInfo
@@ -72,7 +72,8 @@ Public Class SurveyEntry
         Else
             SpeakerBox.Image = My.Resources.Speaker_Off
         End If
-    End Sub
+
+	End Sub
     Private Sub SurveyEntry_Show(sender As Object, e As EventArgs) Handles Me.Shown
         ' The GUI doesn't allow the datagridview double-buffering to be enabled, so the next three lines enable it
         Dim dgvType As Type = SurveyView.GetType()
@@ -307,10 +308,10 @@ Public Class SurveyEntry
                 Rtn = 0
             End If
         Catch
-            Dim Lines As String() = {"", "", "", ""}
-            Lines(0) = "Error in CellVal."
-            Lines(0) = "Calling Sub: " & CallingSub
-            Lines(2) = "Column: " & column.ToString()
+			Dim Lines As String() = New String(3) {"", "", "", ""}
+			Lines(0) = "Error in CellVal."
+			Lines(1) = "Calling Sub: " & CallingSub
+			Lines(2) = "Column: " & column.ToString()
             Lines(3) = "Row: " & Row.ToString()
             ErrorBox(Lines)
         End Try
@@ -331,9 +332,10 @@ Public Class SurveyEntry
         Try
             While (Index >= 0)
                 If CellVal(dgrid, PBoard, Index, "FindPrevious getting PBoard at Index") <> 0 Or CellVal(dgrid, PDBoard, Index, "FindPrevious getting PDBoard at Index") <> 0 Then
-                    Rtn = Index
-                    Exit While
-                End If
+					Return Index
+					'Rtn = Index
+					'Exit While
+				End If
                 Index -= 1
             End While
         Catch
@@ -641,28 +643,36 @@ Public Class SurveyEntry
         AddHandler SurveyView.SelectionChanged, AddressOf SurveyView_SelectionChanged
     End Sub
 
-    'Private Sub SurveyEntry_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-    '    TotalWorkbook = Nothing
-    'End Sub
+	'Private Sub SurveyEntry_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+	'    TotalWorkbook = Nothing
+	'End Sub
 
-    Private Function PreviouslyEntered(dayt As String, Serial As String) As Boolean
-        '        Dim IsFound As Boolean = False
-        '        'TotalWorkbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
-        '        Dim Sheet As Worksheet = TotalWorkbook.CurrentWorksheet
-        '        Dim BottomLine As Integer = LastLine() - 1
-        '        While ((BottomLine > 2) AndAlso (Not IsFound))
-        '        'If IsDBNull(Sheet.GetCell("A" & BottomLine.ToString())) Then Return False
-        '        Dim Trip As String = Sheet.GetCellData("A" & BottomLine.ToString()).ToString()
-        '        Dim SDate As String = Sheet.GetCellData("B" & BottomLine.ToString()).ToString()
-        '        IsFound = ((Trim(dayt) = Trim(SDate)) AndAlso (Trim(Serial) = Trim(Trip))) ' Checks whether this serial number has been entered for this date already, indicating a duplicate
-        '        BottomLine -= 1
-        '        End While
-        '        Sheet = Nothing
-        '       Return IsFound
-        Return False
-    End Function
+	Private Function PreviouslyEntered(dayt As String, Serial As String) As Boolean
+		Dim FixDate As String() = dayt.Split("/")
+		For x = 0 To FixDate.Length - 1
+			If FixDate(x).First() = "0" Then
+				FixDate(x) = FixDate(x).Remove(0, 1)
+			End If
+		Next x
+		Dim Entrydayt As String = String.Join("/", FixDate)
+		Dim IsFound As Boolean = False
+		'        'TotalWorkbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
+		Dim Sheet As Worksheet = TotalWorkbook.CurrentWorksheet
+		Dim BottomLine As Integer = LastLine() - 1
+		While ((BottomLine > 2) AndAlso (Not IsFound))
+			'        'If IsDBNull(Sheet.GetCell("A" & BottomLine.ToString())) Then Return False
+			Dim FixTrip As String() = RouteRunSplit(Sheet.GetCellData("A" & BottomLine.ToString()).ToString())
+			If FixTrip(0) = "2E" Then FixTrip(0) = "2East"
+			Dim Trip As String = FixTrip(0) & "-" & FixTrip(1)
+			Dim SDate As String = Sheet.GetCellData("B" & BottomLine.ToString()).ToString()
+			IsFound = ((Trim(Entrydayt) = Trim(SDate)) AndAlso (Trim(Serial) = Trim(Trip))) ' Checks whether this serial number has been entered for this date already, indicating a duplicate
+			BottomLine -= 1
+		End While
+		Sheet = Nothing
+		Return IsFound
+	End Function
 
-    Private Function LastLine() As Integer
+	Private Function LastLine() As Integer
         ' Although there is a built-in way to find the last entered line on a spreadsheet, this one is consistently correct.
         ' The built-in method finds the last line accessed, rather than the last line with any data.
         ''Dim Last As Integer = 1
@@ -771,15 +781,15 @@ Public Class SurveyEntry
     End Sub
 
     Public Shared Sub PlaySound(Optional ShouldIPlay As Boolean = False, Optional SoundToPlay As System.IO.Stream = Nothing)
-        If (MainForm.GlobalSettings.AudibleAlert Or ShouldIPlay) Then
-            My.Computer.Audio.Play(SoundToPlay, AudioPlayMode.Background)
-        End If
-    End Sub
+		If (MainForm.GlobalSettings.AudibleAlert OrElse ShouldIPlay) Then
+			My.Computer.Audio.Play(SoundToPlay, AudioPlayMode.Background)
+		End If
+	End Sub
     Public Shared Sub ErrorBox(Lines As String())
         Dim Prompt As New System.Text.StringBuilder
         For Each Line As String In Lines
-            Prompt.Append(Line + vbNewLine)
-        Next
+			Prompt.Append(Line & vbNewLine)
+		Next
         PlaySound(True, SoundToPlay:=My.Resources.sound_wrong)
         MsgBox(Prompt.ToString(), vbOKOnly)
     End Sub

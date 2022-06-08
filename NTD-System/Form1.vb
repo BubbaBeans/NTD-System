@@ -296,8 +296,8 @@ redo:
     Private Sub StatusText_TextChanged(sender As Object, e As EventArgs) ' Handles StatusText.TextChanged
         RemoveHandler StatusText.TextChanged, AddressOf StatusText_TextChanged
         Array.ForEach(Enumerable.Range(0, StatusText.Lines.Length).Where(Function(x) StatusText.Lines(x).StartsWith("!BOLD!")).ToArray, Sub(x)
-                                                                                                                                            StatusText.SelectionStart = StatusText.GetFirstCharIndexFromLine(x)
-                                                                                                                                            StatusText.SelectionLength = 6
+																																			StatusText.SelectionStart = StatusText.GetFirstCharIndexFromLine(x)
+																																			StatusText.SelectionLength = 6
                                                                                                                                             StatusText.SelectedText = String.Empty
                                                                                                                                             'StatusText.SelectionStart -= 6
                                                                                                                                             StatusText.SelectionLength = StatusText.Lines(x).Length
