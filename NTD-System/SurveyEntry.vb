@@ -97,8 +97,9 @@ Public Class SurveyEntry
             SurveyView.CurrentCell = SurveyView.Rows(0).Cells(PBoard)
             SurveyView.FirstDisplayedScrollingRowIndex = 0
             PreviouslySelectedRow = 0
-            SurveyView.Rows(0).DefaultCellStyle.BackColor = Color.Aqua
-        Else
+			SurveyView.Rows(0).DefaultCellStyle.BackColor = Color.Aqua
+			SurveyView.Rows(0).Cells(PDBoard).ReadOnly = True
+		Else
             SurveyView.Rows.Clear()
             ImportButt.Enabled = True
         End If
@@ -362,30 +363,33 @@ Public Class SurveyEntry
 
     Protected Sub SurveyView_SelectionChanged(sender As Object, e As EventArgs) 'Handles SurveyView.SelectionChanged
         SuspendDrawing(SurveyView)
-        With SurveyView
-            If .CurrentCell.ColumnIndex < PBoard Then
-                Dim WorkRow As Integer = .CurrentCell.RowIndex
-                If WorkRow > 0 Then
-                    WorkRow -= 1
-                Else
-                    WorkRow = LastRow - 1
-                End If
-                .CurrentCell = .Rows(WorkRow).Cells(PDBoard)
-            ElseIf .CurrentCell.ColumnIndex > PDBoard Then
-                Dim WorkRow As Integer = .CurrentCell.RowIndex
-                If WorkRow < (LastRow - 1) Then
-                    WorkRow += 1
-                Else
-                    WorkRow = 0
-                End If
-                .CurrentCell = .Rows(WorkRow).Cells(PBoard)
-            End If
+		With SurveyView
+			Dim WorkRow As Integer = .CurrentCell.RowIndex
+			If .CurrentCell.ColumnIndex < PBoard Then
+				If WorkRow > 0 Then
+					WorkRow -= 1
+				Else
+					WorkRow = LastRow - 1
+				End If
+				.CurrentCell = .Rows(WorkRow).Cells(PDBoard)
+			ElseIf .CurrentCell.ColumnIndex > PDBoard Then
+				WorkRow = .CurrentCell.RowIndex
+				If WorkRow < (LastRow - 1) Then
+					WorkRow += 1
+				Else
+					WorkRow = 0
+				End If
+				.CurrentCell = .Rows(WorkRow).Cells(PBoard)
+			End If
+			If WorkRow = 0 AndAlso .CurrentCell.ColumnIndex = PDBoard Then
+				.CurrentCell = .Rows(1).Cells(PBoard)
+			End If
 
-            .Rows(PreviouslySelectedRow).DefaultCellStyle = Nothing
-            PreviouslySelectedRow = .CurrentRow.Index
-            .CurrentRow.DefaultCellStyle.BackColor = Color.Aqua
-        End With
-        ResumeDrawing(SurveyView)
+			.Rows(PreviouslySelectedRow).DefaultCellStyle = Nothing
+			PreviouslySelectedRow = .CurrentRow.Index
+			.CurrentRow.DefaultCellStyle.BackColor = Color.Aqua
+		End With
+		ResumeDrawing(SurveyView)
     End Sub
     Private Sub StoreOnFile(SV As EnteredSurvey) ', Workbook As ReoGridControl)
         'Workbook.Load(My.Settings.BaseLocation & "\" & My.Settings.TotalFile, IO.FileFormat.Excel2007)
